@@ -1,0 +1,116 @@
+---
+// Parte superior del archivo Astro
+
+import axios from 'axios';
+import Swiper from 'swiper';
+import 'swiper/css';
+// Módulo Navigation de Swiper y estilos
+import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/css/navigation";
+
+// Define la interfaz para la imagen
+interface Image {
+  public_id: string;
+  secure_url: string;
+}
+
+// Acceder a las credenciales desde el archivo .env
+const cloudName = import.meta.env.CLOUDINARY_CLOUD_NAME;
+const apiKey = import.meta.env.CLOUDINARY_API_KEY;
+const apiSecret = import.meta.env.CLOUDINARY_API_SECRET;
+const folderName = 'Ilustraciones'; // Nombre de la carpeta en Cloudinary
+
+// Endpoint del API de Cloudinary para acceder a las imágenes dentro de la carpeta
+const apiUrl = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/upload`;
+
+// Hacer la solicitud a la API para obtener las imágenes de la carpeta
+let images: Image[] = [];
+try {
+  const response = await axios.get(apiUrl, {
+    auth: {
+      username: apiKey,
+      password: apiSecret,
+    },
+  });
+  images = response.data.resources.filter((image: any) => image.asset_folder === folderName);
+} catch (error) {
+  console.error('Error al obtener las imágenes de Cloudinary:', error);
+  images = []; // Manejar el error si no se pueden obtener las imágenes
+}
+
+// Configurar Swiper solo en el cliente
+if (typeof window !== 'undefined') {
+  const swiper = new Swiper(".swiper", {
+    modules: [Navigation, Autoplay], // Agrega el módulo Autoplay
+    loop: true,
+    slidesPerView: 3,
+    spaceBetween: 40,
+    navigation: {
+      prevEl: ".swiper-button-prev",
+      nextEl: ".swiper-button-next",
+    },
+    autoplay: {  // Configuración de autoplay
+      delay: 3000, // 3 segundos entre cada cambio
+      disableOnInteraction: false, // Sigue rotando aunque el usuario interactúe
+    },
+  });
+}
+---
+
+<section class="carousel box">
+  {images.length > 0 ? (
+    <div class="swiper">
+      <div class="swiper-wrapper">
+      {images.map((image: Image) => {
+        const transformedUrl = `https://res.cloudinary.com/${cloudName}/image/upload/q_auto,f_auto,c_fill,g_auto,h_250,w_970/${image.public_id}`;
+        return (
+          <div class="swiper-slide">
+            <img src={transformedUrl} alt={image.public_id} class="carousel-image" />
+          </div>
+        );
+      })}
+      </div>
+      <div class="swiper-button-prev"></div> <!-- Botones de navegación -->
+      <div class="swiper-button-next"></div>
+    </div>
+  ) : (
+    <p>No se encontraron imágenes en la carpeta</p>
+  )}
+</section>
+
+
+<style>
+  .carousel {
+  border: 1px solid var(--gray-800);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  background-color: var(--gray-999_40);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.swiper {
+  width: 100%;
+  height: 400px;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: #fff; /* Cambiar el color de los botones */
+}
+
+
+</style>

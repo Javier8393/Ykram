@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import axios from 'axios';
+
+const { folderName } = Astro.props; // Prop que recibe el nombre de la carpeta
+
+// Define la interfaz para las imágenes
+interface ImageData {
+    secure_url: string;
+    display_name: string;
+    width: number;
+    height: number;
+}
+
+let images: ImageData[] = []; // Especificar el tipo de images
+
+// Función para cargar las imágenes desde el backend
+async function loadImages() {
+    try {
+        const response = await axios.get(`http://localhost:3000/api/images/${folderName}`);
+        images = response.data; // Obtener las imágenes con ancho y alto
+    } catch (error) {
+        console.error("Error al cargar las imágenes:", error);
+        images = [];
+    }
+}
+
+// Cargar las imágenes antes de renderizar
+await loadImages();
+---
+
+<BaseLayout>
+    <div class="masonry-container">
+        {images.length > 0 ? (
+            images.map((image, index) => (
+                <a
+                    href={image.secure_url} 
+                    data-pswp-width={image.width} 
+                    data-pswp-height={image.height} 
+                    title={image.display_name}
+                    class="masonry-item"
+                >
+                    <img src={image.secure_url} alt={image.display_name} class="masonry-image" />
+                </a>
+            ))
+        ) : (
+            <p>No hay imágenes disponibles.</p>
+        )}
+    </div>
+</BaseLayout>
+
+<script src="/src/scripts/photoswipe-init.js"></script>
+
+<style>
+    .masonry-container {
+        max-width: 1800px; /* Ancho máximo del contenedor */
+        margin: 0 auto; /* Centra el contenedor horizontalmente */
+        padding: 20px; /* Espacio interno para evitar que el contenido toque los bordes */
+        column-count: 3; /* Número de columnas */
+        column-gap: 10px; /* Espacio entre columnas */
+    }
+
+    .masonry-item {
+        break-inside: avoid; /* Evita que los elementos se rompan en el medio */
+        margin-bottom: 10px; /* Espacio inferior entre los elementos */
+    }
+
+    .masonry-image {
+        width: 100%; /* Ocupar todo el ancho del contenedor */
+        height: auto; /* Ajustar el alto automáticamente */
+        display: block; /* Asegura que las imágenes se alineen correctamente */
+        border-radius: 5px; /* Bordes redondeados */
+        transition: transform 0.3s; /* Efecto de transición */
+    }
+
+    .masonry-image:hover {
+        transform: scale(1.05); /* Efecto de zoom al pasar el cursor */
+    }
+
+    @media (max-width: 768px) {
+        .masonry-container {
+            column-count: 2; /* Cambia a dos columnas en pantallas más pequeñas */
+        }
+    }
+
+    @media (max-width: 480px) {
+        .masonry-container {
+            column-count: 1; /* Cambia a una columna en pantallas muy pequeñas */
+        }
+    }
+</style>

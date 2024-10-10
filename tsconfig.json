@@ -1,0 +1,13 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "types": ["@types/node"], // Asegúrate de incluir esto
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "jsx": "preserve",
+    "esModuleInterop": true, // Añadir esta línea para la interoperabilidad de módulos
+    "skipLibCheck": true // Esto evita los errores de tipos en bibliotecas
+  },
+  "include": ["src/**/*.ts", "src/**/*.astro"]
+}

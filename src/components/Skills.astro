@@ -1,0 +1,86 @@
+---
+import Icon from './Icon.astro';
+---
+
+<section class="box skills">
+	<div class="stack gap-1 lg:gap-2">
+		<Icon icon="pencil-line" color="var(--accent-regular)" size="2.5rem" gradient />
+		<h2>Ilustrador</h2>
+		<p>Me especializo en juegos de mesa y literatura juvenil, pero siempre estoy dispuesto a enfrentarme a nuevos retos.</p>
+	</div>
+	<div class="stack gap-1 lg:gap-2">
+		<Icon icon="pencil-line" color="var(--accent-regular)" size="2.5rem" gradient />
+		<h2>Concept Artist</h2>
+		<p>Mi trabajo abarca el diseño de personajes, entornos y criaturas, desde las primeras ideas hasta la presentación final.</p>
+	</div>
+	<div class="stack gap-1 lg:gap-2">
+		<Icon icon="paper-plane-tilt" color="var(--accent-regular)" size="2.5rem" gradient />
+		<h2>Experiencia</h2>
+		<p>He trabajado en varias editoriales como: Circulo Rojo, Papanatas Games, Falomir Juegos entre otros.</p>
+	</div>
+	<div class="stack gap-1 lg:gap-2">
+		<Icon icon="microphone-stage" color="var(--accent-regular)" size="2.5rem" gradient />
+		<h2>Podcast</h2>
+		<p>Tambien tengo un podcast de arte, donde hago entrevistas, doy consejos de ilustración y muchas otras cosas interesantes</p>
+	</div>
+</section>
+
+<style>
+	.box {
+		border: 1px solid var(--gray-800);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		background-color: var(--gray-999);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.skills {
+		display: flex;
+		flex-direction: column;
+		gap: 3rem;
+	}
+
+	.skills h2 {
+		font-size: var(--text-lg);
+	}
+
+	.skills p {
+		color: var(--gray-100);
+	}
+
+	/* Pantallas pequeñas: 1 columna */
+	@media (max-width: 50em) {
+		.skills {
+			display: grid;
+			grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
+			gap: 5rem;
+		}
+	}
+
+	/* Pantallas medianas: 2 columnas */
+	@media (min-width: 50em) and (max-width: 75em) {
+		.skills {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas medianas */
+			gap: 5rem;
+		}
+	}
+
+	/* Pantallas grandes: 4 columnas */
+	@media (min-width: 75em) {
+		.skills {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr); /* 4 columnas en pantallas grandes */
+			gap: 5rem;
+		}
+
+		.box {
+			border-radius: 1.5rem;
+			padding: 2.5rem;
+		}
+
+		.skills h2 {
+			font-size: var(--text-2xl);
+		}
+	}
+</style>
