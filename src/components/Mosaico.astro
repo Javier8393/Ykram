@@ -17,7 +17,7 @@ let images: ImageData[] = []; // Especificar el tipo de images
 // Función para cargar las imágenes desde el backend
 async function loadImages() {
     try {
-        const response = await axios.get(`http://localhost:3000/api/images/${folderName}`);
+        const response = await axios.get(`${process.env.BACKEND_URL}/api/images/${folderName}`);
         images = response.data; // Obtener las imágenes con ancho y alto
     } catch (error) {
         console.error("Error al cargar las imágenes:", error);
