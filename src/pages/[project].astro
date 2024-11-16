@@ -1,0 +1,52 @@
+---
+// Importa tu componente de galería
+import Mosaico from '../components/Mosaico.astro'; // Ajusta la ruta según tu estructura
+
+// Define la interfaz para las carpetas
+interface FolderData {
+    name: string;
+    path: string;
+}
+
+// Configura Cloudinary
+import cloudinary from "cloudinary";
+
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Función para obtener las rutas dinámicas
+export async function getStaticPaths() {
+    try {
+        // Obtiene las carpetas en Cloudinary
+        const { folders }: { folders: FolderData[] } = await cloudinary.v2.api.sub_folders('Proyectos');
+
+        // Devuelve las rutas como un array
+        return folders.map(folder => ({
+            params: { project: folder.path.split('/')[1] }, // Esto extrae el nombre de la carpeta
+        }));
+    } catch (error) {
+        console.error("Error al cargar las carpetas:", error);
+        return []; // Retorna un array vacío en caso de error
+    }
+}
+
+
+// Habilita prerenderización
+export const prerender = true;
+
+// Accede al nombre del proyecto desde el parámetro de ruta
+const { project } = Astro.params; // Obtén el nombre del proyecto
+
+// Comprueba si el project está definido
+if (!project) {
+    throw new Error("Project not found");
+}
+
+// Formatea el nombre de la carpeta para pasarla al componente
+const folderName = `Proyectos/${project}`; // Concatenar para formar el path completo
+---
+
+<Mosaico folderName={folderName} />

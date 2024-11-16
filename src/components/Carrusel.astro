@@ -1,0 +1,121 @@
+---
+// Carrusel.astro
+import cloudinary from 'cloudinary';
+
+// Definir tipos
+interface Image {
+  url: string;
+  alt: string;
+}
+
+// Configuración de Cloudinary
+cloudinary.v2.config({
+  cloud_name: import.meta.env.CLOUDINARY_CLOUD_NAME,
+  api_key: import.meta.env.CLOUDINARY_API_KEY,
+  api_secret: import.meta.env.CLOUDINARY_API_SECRET,
+});
+
+const folderName = 'Carrusel';
+let images: Image[] = [];
+try {
+  const { resources } = await cloudinary.v2.search
+    .expression(`folder:${folderName} AND resource_type:image`)
+    .max_results(30)
+    .execute();
+  images = resources.map((image: any) => ({
+    url: image.secure_url,
+    alt: image.public_id,
+  }));
+} catch (error) {
+  console.error('Error al obtener imágenes de Cloudinary:', error);
+}
+---
+
+<div class="carousel">
+  <div class="carousel-track">
+    {images.map((image: Image) => (
+      <img src={image.url} class="carousel-slide" alt={image.alt} />
+    ))}
+  </div>
+  <button class="carousel-button prev">‹</button>
+  <button class="carousel-button next">›</button>
+</div>
+
+<style>
+  .carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+  }
+
+  .carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .carousel-slide {
+    min-width: 100%;
+    height: auto;
+    border-radius: 5px;
+  }
+
+  .carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .carousel-button.prev {
+    left: 10px;
+  }
+
+  .carousel-button.next {
+    right: 10px;
+  }
+
+  .carousel-button:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+</style>
+
+<script>
+  const track = document.querySelector('.carousel-track') as HTMLElement | null;
+  const slides = Array.from(track?.children || []);
+  const nextButton = document.querySelector('.carousel-button.next') as HTMLElement | null;
+  const prevButton = document.querySelector('.carousel-button.prev') as HTMLElement | null;
+
+  let currentIndex = 0;
+
+  function updateCarousel() {
+    if (track) {
+      const offset = -currentIndex * 100;
+      track.style.transform = `translateX(${offset}%)`;
+    }
+  }
+
+  function showNextSlide() {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateCarousel();
+  }
+
+  function showPrevSlide() {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    updateCarousel();
+  }
+
+  // Event listeners para los botones, solo si existen en el DOM
+  nextButton?.addEventListener('click', showNextSlide);
+  prevButton?.addEventListener('click', showPrevSlide);
+
+  // Autoplay
+  setInterval(showNextSlide, 3000);
+</script>

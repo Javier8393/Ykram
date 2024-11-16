@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import ThemeToggle from './ThemeToggle.astro';
+import TextToggle from './TextToggle.astro';
 import type { iconPaths } from './IconPaths';
 
 /** Main menu items */
@@ -12,16 +12,17 @@ const textLinks: { label: string; href: string }[] = [
 
 /** Icon links to social media — edit these with links to your profiles! */
 const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[] = [
-	{ label: 'Podcast', href: 'Ruta podcast', icon: 'microphone-stage' },
-
+	{ label: 'Spotify', href: 'https://open.spotify.com/show/1CI2iK8Rv4AQWCvazJd2fI?si=o6FCuhZ1QTuXzPLuFRpa_g&nd=1&dlsi=a826e8b43be14771', icon: 'spotify' },
+	{ label: 'Ivoox', href: 'https://www.ivoox.com/podcast-camino-del-ilustrador_sq_f1831710_1.html', icon: 'ivoox' },
+	{ label: 'Youtube', href: 'https://youtube.com/@elcaminodelilustrador', icon: 'youtube' },
+	{ label: 'Apple Podcast', href: 'https://podcasts.apple.com/es/podcast/el-camino-del-ilustrador/id1493738985', icon: 'apple' },
 ];
 ---
 
 <nav>
 	<div class="menu-header">
 		<a href="/" class="site-title">
-			<Icon icon="terminal-window" color="var(--accent-regular)" size="1.6em" gradient />
-			Ykram
+			<img src="/icons/logoweb-YKRAM-optimizado.gif" alt="Icono YKRAM"  width="200">
 		</a>
 		<menu-button>
 			<template>
@@ -32,44 +33,8 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 			</template>
 		</menu-button>
 	</div>
-	<noscript>
-		<ul class="nav-items">
-			{
-				textLinks.map(({ label, href }) => (
-					<li>
-						<a
-							aria-current={Astro.url.pathname === href}
-							class:list={[
-								'link',
-								{
-									active:
-										Astro.url.pathname === href ||
-										(href !== '/' && Astro.url.pathname.startsWith(href)),
-								},
-							]}
-							href={href}
-						>
-							{label}
-						</a>
-					</li>
-				))
-			}
-		</ul>
-	</noscript>
-	<noscript>
-		<div class="menu-footer">
-			<div class="socials">
-				{
-					iconLinks.map(({ href, icon, label }) => (
-						<a href={href} class="social">
-							<span class="sr-only">{label}</span>
-							<Icon icon={icon} />
-						</a>
-					))
-				}
-			</div>
-		</div>
-	</noscript>
+
+
 	<div id="menu-content" hidden>
 		<ul class="nav-items">
 			{
@@ -94,7 +59,9 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 			}
 		</ul>
 		<div class="menu-footer">
+			<!-- Iconos del Podcast -->
 			<div class="socials">
+				
 				{
 					iconLinks.map(({ href, icon, label }) => (
 						<a href={href} class="social">
@@ -105,8 +72,8 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 				}
 			</div>
 
-			<div class="theme-toggle">
-				<ThemeToggle />
+			<div class="text-toggle">
+				<TextToggle />
 			</div>
 		</div>
 	</div>
@@ -155,7 +122,6 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 		position: relative;
 		font-family: var(--font-brand);
 		font-weight: 500;
-		margin-bottom: 3.5rem;
 	}
 
 	.menu-header {
@@ -250,7 +216,7 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 	.socials {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.625rem;
+		
 		font-size: var(--icon-size);
 	}
 
@@ -267,7 +233,7 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 		color: var(--accent-text-over);
 	}
 
-	.theme-toggle {
+	.text-toggle {
 		display: flex;
 		align-items: center;
 		height: calc(var(--icon-size) + 2 * var(--icon-padding));

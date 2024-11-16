@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import axios from 'axios';
+import cloudinary from "cloudinary";
+import { Image } from 'astro:assets';
 
 const { folderName } = Astro.props; // Prop que recibe el nombre de la carpeta
 
@@ -12,27 +13,37 @@ interface ImageData {
     height: number;
 }
 
-let images: ImageData[] = []; // Especificar el tipo de images
+let images: ImageData[] = [];
 
-// Función para cargar las imágenes desde el backend
-async function loadImages() {
-    try {
-        const response = await axios.get(`${process.env.BACKEND_URL}/api/images/${folderName}`);
-        images = response.data; // Obtener las imágenes con ancho y alto
-    } catch (error) {
-        console.error("Error al cargar las imágenes:", error);
-        images = [];
-    }
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+
+try {
+    // Usa el método de búsqueda avanzada de Cloudinary para filtrar por nombre de carpeta
+    const { resources }: { resources: ImageData[] } = await cloudinary.v2.search
+        .expression(`folder:${folderName} AND resource_type:image`)  // Filtra las imágenes por carpeta
+        .max_results(30)                     // Limita los resultados a 30 (puedes ajustarlo)
+        .execute();                          // Ejecuta la búsqueda
+    
+    // Ordena las imágenes alfabéticamente por el campo 'display_name'
+    images = resources.sort((a: ImageData, b: ImageData) => a.display_name.localeCompare(b.display_name));
+} catch (error) {
+    console.error('Error al buscar imágenes:', error);
+    throw new Error('No se pudieron obtener las imágenes de la carpeta.');
 }
 
-// Cargar las imágenes antes de renderizar
-await loadImages();
+    
+
 ---
 
 <BaseLayout>
     <div class="masonry-container">
         {images.length > 0 ? (
-            images.map((image, index) => (
+            images.map((image) => (
                 <a
                     href={image.secure_url} 
                     data-pswp-width={image.width} 
@@ -40,7 +51,15 @@ await loadImages();
                     title={image.display_name}
                     class="masonry-item"
                 >
-                    <img src={image.secure_url} alt={image.display_name} class="masonry-image" />
+                    <Image 
+                        src={image.secure_url} 
+                        alt={image.display_name} 
+                        width={image.width}  
+                        height={image.height}
+                        loading="eager" 
+                        class="masonry-image" 
+                    />
+
                 </a>
             ))
         ) : (
@@ -53,39 +72,43 @@ await loadImages();
 
 <style>
     .masonry-container {
-        max-width: 1800px; /* Ancho máximo del contenedor */
-        margin: 0 auto; /* Centra el contenedor horizontalmente */
-        padding: 20px; /* Espacio interno para evitar que el contenido toque los bordes */
-        column-count: 3; /* Número de columnas */
-        column-gap: 10px; /* Espacio entre columnas */
-    }
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 25px;
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-    .masonry-item {
-        break-inside: avoid; /* Evita que los elementos se rompan en el medio */
-        margin-bottom: 10px; /* Espacio inferior entre los elementos */
-    }
+.masonry-item {
+    width: 100%;
+}
 
-    .masonry-image {
-        width: 100%; /* Ocupar todo el ancho del contenedor */
-        height: auto; /* Ajustar el alto automáticamente */
-        display: block; /* Asegura que las imágenes se alineen correctamente */
-        border-radius: 5px; /* Bordes redondeados */
-        transition: transform 0.3s; /* Efecto de transición */
-    }
+.masonry-image {
+    width: 100%;
+    height: auto;
+    
+    display: block;
+    border-radius: 5px;
+    transition: transform 0.3s;
+    object-fit: scale-down; /* Asegura que la imagen se recorte para llenar el espacio si es necesario */
+}
 
-    .masonry-image:hover {
-        transform: scale(1.05); /* Efecto de zoom al pasar el cursor */
-    }
 
-    @media (max-width: 768px) {
-        .masonry-container {
-            column-count: 2; /* Cambia a dos columnas en pantallas más pequeñas */
-        }
-    }
+.masonry-image:hover {
+    transform: scale(1.05);
+}
 
-    @media (max-width: 480px) {
-        .masonry-container {
-            column-count: 1; /* Cambia a una columna en pantallas muy pequeñas */
-        }
+@media (max-width: 768px) {
+    .masonry-container {
+        grid-template-columns: repeat(2, 1fr);
     }
+}
+
+@media (max-width: 480px) {
+    .masonry-container {
+        grid-template-columns: 1fr;
+    }
+}
+
 </style>

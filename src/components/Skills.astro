@@ -1,86 +1,110 @@
 ---
 import Icon from './Icon.astro';
+import type { iconPaths } from './IconPaths';
+
+const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[] = [
+	{ label: 'Spotify', href: 'https://open.spotify.com/show/1CI2iK8Rv4AQWCvazJd2fI?si=o6FCuhZ1QTuXzPLuFRpa_g&nd=1&dlsi=a826e8b43be14771', icon: 'spotify' },
+	{ label: 'Ivoox', href: 'https://www.ivoox.com/podcast-camino-del-ilustrador_sq_f1831710_1.html', icon: 'ivoox' },
+	{ label: 'Youtube', href: 'https://youtube.com/@elcaminodelilustrador', icon: 'youtube' },
+	{ label: 'Apple Podcast', href: 'https://podcasts.apple.com/es/podcast/el-camino-del-ilustrador/id1493738985', icon: 'apple' },
+];
 ---
 
 <section class="box skills">
+	
 	<div class="stack gap-1 lg:gap-2">
-		<Icon icon="pencil-line" color="var(--accent-regular)" size="2.5rem" gradient />
-		<h2>Ilustrador</h2>
-		<p>Me especializo en juegos de mesa y literatura juvenil, pero siempre estoy dispuesto a enfrentarme a nuevos retos.</p>
+		<h2><Icon icon="expert" color="var(--accent-regular)" size="2.5rem"  /> Experiencia </h2>
+		<br>
+		<p>Desde 2017 he trabajado en proyectos internacionales, en areas como: Juegos de mesa, Libros, Cine y Videojuegos.
+			<br>Para mi cada proyecto es unico y especial. Pongo toda mi creatividad 
+			y mi experiencia a tu disposicion para lograr un resultado de alta calidad.
+		</p>
 	</div>
 	<div class="stack gap-1 lg:gap-2">
-		<Icon icon="pencil-line" color="var(--accent-regular)" size="2.5rem" gradient />
-		<h2>Concept Artist</h2>
-		<p>Mi trabajo abarca el diseño de personajes, entornos y criaturas, desde las primeras ideas hasta la presentación final.</p>
-	</div>
-	<div class="stack gap-1 lg:gap-2">
-		<Icon icon="paper-plane-tilt" color="var(--accent-regular)" size="2.5rem" gradient />
-		<h2>Experiencia</h2>
-		<p>He trabajado en varias editoriales como: Circulo Rojo, Papanatas Games, Falomir Juegos entre otros.</p>
-	</div>
-	<div class="stack gap-1 lg:gap-2">
-		<Icon icon="microphone-stage" color="var(--accent-regular)" size="2.5rem" gradient />
-		<h2>Podcast</h2>
-		<p>Tambien tengo un podcast de arte, donde hago entrevistas, doy consejos de ilustración y muchas otras cosas interesantes</p>
+		<h2>
+			<div class="socials">
+				{
+					iconLinks.map(({ href, icon, label }) => (
+						<a href={href} class="social">
+							
+							<Icon icon={icon} />
+						</a>
+					))
+				}
+			
+			</div> Podcast:<br> El Camino del ilustrador 
+			
+			
+		</h2>
+		<br>
+		<p>
+			Un programa dedicado al dibujo con entrevistas a profesionales de distintas areas. 
+			<br><br> 
+			Aquí hablaremos de actualidad 
+			y diferentes procesos creativos. ¡Nos vemos en el camino!</p>
 	</div>
 </section>
 
 <style>
 	.box {
-		border: 1px solid var(--gray-800);
-		border-radius: 0.75rem;
-		padding: 1.5rem;
-		background-color: var(--gray-999);
-		box-shadow: var(--shadow-sm);
+	border: 1px solid var(--gray-800);
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	background-color: var(--gray-999);
+	box-shadow: var(--shadow-sm);
+	width: 100%; /* Asegura que ocupe el ancho completo */
+}
+
+.skills {
+	display: grid;
+	grid-template-columns: 1fr; /* 1 columna por defecto */
+	gap: 3rem;
+	width: 100%; /* Abarca todo el ancho */
+}
+
+.socials {
+		display: flex;
+		flex-wrap: wrap;
+		
+		font-size: var(--icon-size);
 	}
 
-	.skills {
+	.social {
 		display: flex;
-		flex-direction: column;
-		gap: 3rem;
+		padding: var(--icon-padding);
+		text-decoration: none;
+		color: var(--accent-dark);
+		transition: color var(--theme-transition);
+	}
+
+/* Pantallas medianas y grandes: 2 columnas */
+@media (min-width: 50em) {
+	.skills {
+		grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+		gap: 5rem; /* Ajusta la separación entre columnas */
+	}
+}
+
+/* Estilo de texto */
+.skills h2 {
+	font-size: var(--text-lg);
+}
+
+.skills p {
+	color: var(--gray-100);
+	font-size: var(--text-2xl);
+}
+
+/* Ajustes para pantallas más grandes */
+@media (min-width: 75em) {
+	.box {
+		border-radius: 1.5rem;
+		padding: 2.5rem;
 	}
 
 	.skills h2 {
-		font-size: var(--text-lg);
+		font-size: var(--text-3xl);
 	}
+}
 
-	.skills p {
-		color: var(--gray-100);
-	}
-
-	/* Pantallas pequeñas: 1 columna */
-	@media (max-width: 50em) {
-		.skills {
-			display: grid;
-			grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
-			gap: 5rem;
-		}
-	}
-
-	/* Pantallas medianas: 2 columnas */
-	@media (min-width: 50em) and (max-width: 75em) {
-		.skills {
-			display: grid;
-			grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas medianas */
-			gap: 5rem;
-		}
-	}
-
-	/* Pantallas grandes: 4 columnas */
-	@media (min-width: 75em) {
-		.skills {
-			display: grid;
-			grid-template-columns: repeat(4, 1fr); /* 4 columnas en pantallas grandes */
-			gap: 5rem;
-		}
-
-		.box {
-			border-radius: 1.5rem;
-			padding: 2.5rem;
-		}
-
-		.skills h2 {
-			font-size: var(--text-2xl);
-		}
-	}
 </style>

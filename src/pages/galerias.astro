@@ -1,26 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Carousel from '../components/Carousel.astro';
 ---
 
 <BaseLayout>
-    
     <div class="gallery-container">
-        <div>
-            <h4>Ilustraciones</h4>
+        <div class="gallery-item">
             <a href="/ilustraciones">
-                <img src="/assets/ilustraciones.jpg" alt="Ilustraciones" class="gallery-image" />
+                <img src="/assets/galerias/ilustraciones.jpg" alt="Ilustraciones" class="gallery-image" />
             </a>
+            <h4 class="gallery-title">Ilustraciones</h4>
         </div>
         
-        <div>
-            <h4>Concept Art</h4>
+        <div class="gallery-item">
             <a href="/concept-art">
-                <img src="/assets/concept-art.jpg" alt="Concept Art" class="gallery-image" />
+                <img src="/assets/galerias/concept-art.jpg" alt="Concept Art" class="gallery-image" />
             </a>
+            <h4 class="gallery-title">Concept Art</h4>
         </div>
     </div>
-    
 </BaseLayout>
 
 <style>
@@ -28,17 +25,24 @@ import Carousel from '../components/Carousel.astro';
         display: flex;
         justify-content: center; /* Centra las imágenes en el contenedor */
         align-items: center;
-        gap: 2rem; /* Espacio entre las imágenes */
+        gap: 3rem; /* Espacio entre las imágenes */
         margin-top: 2rem; /* Espacio en la parte superior */
         flex-wrap: wrap; /* Permite que las imágenes se ajusten en pantallas más pequeñas */
         width: 100%; /* Asegura que el contenedor ocupe todo el ancho de la ventana */
-        overflow: hidden; /* Evita el desbordamiento */
         padding-bottom: 100px; /* Espacio para el footer */
     }
 
+    .gallery-item {
+        display: flex;
+        flex-direction: column; /* Coloca la imagen y el título en columna */
+        align-items: center; /* Centra los elementos horizontalmente */
+        max-width: 800px; /* Máximo ancho para cada ítem */
+        text-align: center; /* Centra el texto */
+    }
+
     .gallery-image {
-        width: 100%; /* Cambiar el ancho a 100% para ocupar todo el espacio */
-        max-width: 750px; /* Mantiene el tamaño máximo deseado */
+        width: 100%; /* Hace que la imagen ocupe todo el ancho del contenedor */
+        max-width: 800px; /* Imagen más grande */
         height: auto; /* Mantiene la proporción de la imagen */
         border-radius: 1rem; /* Bordes redondeados */
         box-shadow: var(--shadow-md); /* Sombra para efecto visual */
@@ -46,19 +50,26 @@ import Carousel from '../components/Carousel.astro';
     }
 
     .gallery-image:hover {
-        transform: scale(1.05); /* Efecto al pasar el cursor */
+        transform: scale(1.08); /* Aumenta el tamaño al pasar el cursor */
+    }
+
+    .gallery-title {
+        margin-top: 1rem; /* Espacio entre la imagen y el título */
+        font-size: 1.5rem; /* Tamaño del texto */
+        color: var(--gray-100); /* Color del texto */
     }
 
     @media (max-width: 768px) {
-        .gallery-image {
-            width: 80%; /* Ajusta el tamaño en pantallas más pequeñas */
-            max-width: none; /* Elimina el límite máximo en pantallas pequeñas */
+        .gallery-item {
+            max-width: 90%; /* Reduce el tamaño del contenedor en pantallas pequeñas */
         }
-    }
 
-    body {
-        margin: 0; /* Elimina el margen del body para evitar espacios adicionales */
-        background-color: transparent; /* Asegura que el fondo no tenga color */
-        height: 100vh; /* Asegura que el body ocupe exactamente la altura de la ventana */
+        .gallery-image {
+            max-width: 100%; /* Elimina el límite de tamaño en pantallas pequeñas */
+        }
+
+        .gallery-title {
+            font-size: 1.25rem; /* Tamaño de texto más pequeño en pantallas móviles */
+        }
     }
 </style>

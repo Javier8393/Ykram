@@ -1,47 +1,179 @@
 ---
-import CallToAction from './CallToAction.astro';
 import Icon from './Icon.astro';
 ---
 
-<aside>
-	<h2>¿Interasado en trabajar conmigo?</h2>
-	<CallToAction href="mailto:me@example.com">
-		Mandame un mensaje
-		<Icon icon="paper-plane-tilt" size="1.2em" />
-	</CallToAction>
+<aside class="box">
+  <!-- Sección de texto a la izquierda -->
+  <div class="info">
+    
+    <img
+				alt="Ykram"
+				class="portrait"
+				width="480"
+				height="620"
+				src="/portrait.jpg"
+			/>
+    <h2>
+      ¿Tienes una idea en mente? <br>!Escribeme y la hacemos realidad juntos!
+    </h2>
+  </div>
+  
+  <!-- Sección de formulario a la derecha -->
+  <form action="/enviar-mensaje" method="post">
+    <div class="form-group">
+      <div class="column">
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name" placeholder="Tu nombre" required />
+
+        <label for="email">Correo:</label>
+        <input type="email" id="email" name="email" placeholder="Tu correo" required />
+
+        <label for="message">Mensaje:</label>
+        <textarea id="message" name="message" placeholder="Tu mensaje" required></textarea>
+        <div class="button-container">
+          <button type="submit">
+            Enviar mensaje
+            <Icon icon="paper-plane-tilt" size="1.2em" />
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </form>
 </aside>
 
 <style>
-	aside {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 3rem;
-		border: 1px solid var(--gray-800);
-		border-radius: 0.75rem;
-		padding: 1.5rem;
-		padding: 4rem 1.5rem;
-		background-color: var(--gray-999);
-		box-shadow: var(--shadow-sm);
-	}
+  aside {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--gray-800);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    background-color: var(--gray-999);
+    box-shadow: var(--shadow-sm);
+    width: 100%;
+  }
 
-	h2 {
-		font-size: var(--text-xl);
-		text-align: center;
-		max-width: 15ch;
-	}
+  .portrait {
+    border-radius: 1.5rem;
+  }
 
-	@media (min-width: 50em) {
-		aside {
-			padding: 7.5rem;
-			flex-direction: row;
-			flex-wrap: wrap;
-			justify-content: space-between;
-		}
+  /* Sección de información a la izquierda */
+  .info {
+    flex: 1;
+    margin-bottom: 1.5rem;
+  }
 
-		h2 {
-			font-size: var(--text-3xl);
-			text-align: left;
-		}
-	}
+  .info h2 {
+    font-size: var(--text-xl);
+    margin-bottom: 0.5rem;
+  }
+
+  .info p {
+    font-size: var(--text-md);
+    color: var(--gray-500);
+  }
+
+  form {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  label {
+    font-size: var(--text-md);
+    color: var(--gray-500);
+  }
+
+  input, textarea {
+    width: 100%;
+    padding: 0.5rem; 
+    border: 1px solid var(--gray-500);
+    border-radius: 0.5rem;
+    font-size: var(--text-md);
+    background-color: var(--gray-200);
+  }
+
+  textarea {
+    height: 125px; 
+    resize: none; 
+  }
+
+  /* Botón y contenedor en pantallas pequeñas */
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  button {
+    padding: 0.5rem 1.5rem;
+    background: var(--gradient-accent-green);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: var(--text-md);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%; /* Ancho completo en pantallas pequeñas */
+  }
+
+  button:hover {
+    transform: scale(1.05);
+  }
+
+  @media (min-width: 50em) {
+    aside {
+      flex-direction: row;
+      gap: 2rem;
+    }
+
+    .info {
+      margin-bottom: 0;
+    }
+
+    form {
+      flex-direction: column;
+    }
+
+    .form-group {
+      flex-direction: row;
+      gap: 2rem;
+    }
+
+    /* Estilos del botón en pantallas grandes */
+    .button-container {
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    button {
+      width: 325px; /* Tamaño fijo en pantallas grandes */
+    }
+  }
+
+  @media (min-width: 75em) {
+    aside {
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+    }
+  }
 </style>
