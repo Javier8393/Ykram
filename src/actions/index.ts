@@ -16,7 +16,7 @@ export const server = {
       message: z.string()
     }),
     handler: async ({name, email, message}) => {
-      resend.emails.send({
+      const { data, error} = await resend.emails.send({
         from: 'onboarding@resend.dev',
         to: 'gr8393@gmail.com',
         subject: 'Nuevo mensaje recibido',
@@ -25,6 +25,10 @@ export const server = {
         <p>message: <strong>${message}</strong>!</p>
         `
       });
+
+      if(error) console.log(error)
+      if(data) console.log(data)
+
       return `Exito!`
     }
   })
