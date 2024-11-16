@@ -1,0 +1,52 @@
+{
+	"version": 3,
+	"routes": [
+		{
+			"src": "^/_astro/(.*)$",
+			"headers": {
+				"cache-control": "public, max-age=31536000, immutable"
+			},
+			"continue": true
+		},
+		{
+			"handle": "filesystem"
+		},
+		{
+			"src": "^\\/_actions(?:\\/(.*?))?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/_image$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/404\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/concept-art\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/galerias\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/ilustraciones\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/proyectos\\/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^\\/$",
+			"dest": "_render"
+		},
+		{
+			"src": "/.*",
+			"dest": "_render",
+			"status": 404
+		}
+	]
+}

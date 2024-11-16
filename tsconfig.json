@@ -3,7 +3,7 @@
   "compilerOptions": {
     "types": ["@types/node"], // Asegúrate de incluir esto
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "target": "ESNext",
     "jsx": "preserve",
     "esModuleInterop": true, // Añadir esta línea para la interoperabilidad de módulos

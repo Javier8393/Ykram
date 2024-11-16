@@ -19,7 +19,7 @@ import Icon from './Icon.astro';
   </div>
   
   <!-- Sección de formulario a la derecha -->
-  <form action="/enviar-mensaje" method="post">
+  <form>
     <div class="form-group">
       <div class="column">
         <label for="name">Nombre:</label>
@@ -29,7 +29,7 @@ import Icon from './Icon.astro';
         <input type="email" id="email" name="email" placeholder="Tu correo" required />
 
         <label for="message">Mensaje:</label>
-        <textarea id="message" name="message" placeholder="Tu mensaje" required></textarea>
+        <textarea id="message" name="message" placeholder="Tu mensaje" required/>
         <div class="button-container">
           <button type="submit">
             Enviar mensaje
@@ -41,6 +41,19 @@ import Icon from './Icon.astro';
     </div>
   </form>
 </aside>
+
+<script>
+  import { actions } from 'astro:actions';
+
+  const form = document.querySelector('form');
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const { error, data } = await actions.contact(formData);
+    if(error) console.log(error)
+    if(data) console.log(data)
+  })
+</script>
 
 <style>
   aside {
