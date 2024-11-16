@@ -1,6 +1,6 @@
 ---
+import cloudinary from '../cloudinary';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import cloudinary from "cloudinary";
 import { Image } from 'astro:assets';
 
 const { folderName } = Astro.props; // Prop que recibe el nombre de la carpeta
@@ -15,16 +15,12 @@ interface ImageData {
 
 let images: ImageData[] = [];
 
-cloudinary.v2.config({
-  cloud_name: process.env.PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+
 
 
 try {
     // Usa el método de búsqueda avanzada de Cloudinary para filtrar por nombre de carpeta
-    const { resources }: { resources: ImageData[] } = await cloudinary.v2.search
+    const { resources }: { resources: ImageData[] } = await cloudinary.search
         .expression(`folder:${folderName} AND resource_type:image`)  // Filtra las imágenes por carpeta
         .max_results(30)                     // Limita los resultados a 30 (puedes ajustarlo)
         .execute();                          // Ejecuta la búsqueda

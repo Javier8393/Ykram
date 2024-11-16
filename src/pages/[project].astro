@@ -1,5 +1,6 @@
 ---
 // Importa tu componente de galería
+import cloudinary from '../cloudinary';
 import Mosaico from '../components/Mosaico.astro'; // Ajusta la ruta según tu estructura
 
 // Define la interfaz para las carpetas
@@ -9,19 +10,12 @@ interface FolderData {
 }
 
 // Configura Cloudinary
-import cloudinary from "cloudinary";
-
-cloudinary.v2.config({
-    cloud_name: process.env.PUBLIC_CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 // Función para obtener las rutas dinámicas
 export async function getStaticPaths() {
     try {
         // Obtiene las carpetas en Cloudinary
-        const { folders }: { folders: FolderData[] } = await cloudinary.v2.api.sub_folders('Proyectos');
+        const { folders }: { folders: FolderData[] } = await cloudinary.api.sub_folders('Proyectos');
 
         // Devuelve las rutas como un array
         return folders.map(folder => ({

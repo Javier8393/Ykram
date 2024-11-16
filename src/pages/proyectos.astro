@@ -1,7 +1,7 @@
 ---
 // Importa el layout base
+import cloudinary from '../cloudinary';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import cloudinary from "cloudinary";
 
 // Define la interfaz para las imágenes de Cloudinary
 interface CloudinaryImage {
@@ -27,26 +27,20 @@ interface ProjectData {
 // Inicializa un array para almacenar los proyectos
 let projects: ProjectData[] = [];
 
-// Configura Cloudinary
-cloudinary.v2.config({
-    cloud_name: process.env.PUBLIC_CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 try {
     // Obtiene las carpetas en Cloudinary
-    const { folders }: { folders: FolderData[] } = await cloudinary.v2.api.sub_folders('Proyectos');
+    const { folders }: { folders: FolderData[] } = await cloudinary.api.sub_folders('Proyectos');
 
     projects = await Promise.all(
         folders.map(async (folder: FolderData) => {
             try {
                 // Especificar el tipo de las imágenes
-                const { resources: images }: { resources: CloudinaryImage[] } = await cloudinary.v2.search
+                const { resources: images }: { resources: CloudinaryImage[] } = await cloudinary.search
                     .expression(`folder:${folder.path} AND resource_type:image`)
                     .execute();
 
-                const { resources: jsonResources } = await cloudinary.v2.search
+                const { resources: jsonResources } = await cloudinary.search
                     .expression(`folder:${folder.path} AND filename:project.json`)
                     .execute();
 

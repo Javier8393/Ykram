@@ -1,6 +1,7 @@
 ---
+import cloudinary from "../cloudinary";
+
 // Carrusel.astro
-import cloudinary from 'cloudinary';
 
 // Definir tipos
 interface Image {
@@ -8,17 +9,11 @@ interface Image {
   alt: string;
 }
 
-// Configuración de Cloudinary
-cloudinary.v2.config({
-  cloud_name: import.meta.env.PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: import.meta.env.CLOUDINARY_API_KEY,
-  api_secret: import.meta.env.CLOUDINARY_API_SECRET,
-});
 
 const folderName = 'Carrusel';
 let images: Image[] = [];
 try {
-  const { resources } = await cloudinary.v2.search
+  const { resources } = await cloudinary.search
     .expression(`folder:${folderName} AND resource_type:image`)
     .max_results(30)
     .execute();
