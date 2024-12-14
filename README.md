@@ -1,6 +1,6 @@
 # Portfolio de Ykram - Ilustrador Profesional
 
-![Portfolio Preview](/project-preview.png)
+![Portfolio Preview](/project-preview.PNG)
 
 ## 🎨 Descripción
 
