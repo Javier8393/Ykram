@@ -1,140 +1,74 @@
 ---
-// Propiedades del componente
 interface Props {
 	title: string;
-	tagline?: string;
-	align?: 'start' | 'center';
+	align?: "start" | "center";
 }
 
-const { align = 'center', tagline, title } = Astro.props;
+const { align = "center", title } = Astro.props;
 ---
 
-<div class:list={['hero grid-container', align]}>
-	<!-- Título: Siempre encima de todo -->
-	<h3 class="title">{title}</h3>
+<div class="box">
+	<!-- Título: Siempre centrado -->
+	<h2 class="title">{title}</h2>
 
-	<!-- Tagline, Carrusel e Imagen -->
-	<div class="content-area">
-		{tagline && <p class="tagline">{tagline}</p>}
-		<div class="carrusel">
-			<slot />
-		</div>
-		<div class="image-container">
-			
-		</div>
+	<!-- Contenido: Slot centrado -->
+	<div class="content">
+		<slot />
 	</div>
 </div>
 
+
+
 <style>
-	.hero {
-		font-size: var(--text-lg);
+/* Estructura general compartida */
+.box {
+	border: 1px solid var(--gray-800);
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	background-color: var(--gray-999);
+	box-shadow: var(--shadow-sm);
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+}
+
+/* Título */
+.title {
+	font-size: var(--text-md);
+	color: var(--gray-0);
+	margin-bottom: 1.5rem;
+}
+
+/* Contenido de Hero */
+.hero .content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+}
+
+/* Ajustes responsivos */
+@media (min-width: 50em) {
+	.box {
+		padding: 2.5rem;
+		border-radius: 1rem;
 	}
 
-	.grid-container {
-		display: grid;
-		grid-template-rows: auto auto;
-		grid-template-columns: 1fr 1fr; /* Dos columnas en pantallas grandes */
-		gap: 1rem;
-	}
-
-	/* Título: Abarca las dos columnas */
 	.title {
-		grid-column: 1 / -1; /* Ocupa todo el ancho */
-		text-align: center;
 		font-size: var(--text-3xl);
-		color: var(--gray-0);
 	}
-
-	.content-area {
-		grid-column: 1 / -1; /* Contiene tagline, carrusel e imagen */
-		display: grid;
-		grid-template-columns: 1fr 1fr; /* Dos columnas en pantallas grandes */
-		grid-template-rows: auto auto;
-		gap: 1rem;
-	}
-
-	/* Tagline: Encima del carrusel */
-	.tagline {
-		grid-column: 1 / 2;
-		text-align: center;
-		color: var(--gray-300);
-		font-size: var(--text-md);
-	}
-
-	/* Carrusel */
-	/* Carrusel: Ahora abarca todo el ancho */
-.carrusel {
-	grid-column: 1 / -1; /* Ocupa toda la fila */
-	grid-row: 2; /* Mantén su posición en la segunda fila */
-	width: 100%; /* Asegura que use el ancho completo */
 }
 
-
-	/* Imagen */
-	.image-container {
-		grid-column: 2;
-		grid-row: 1 / 3;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+@media (min-width: 75em) {
+	.box {
+		padding: 3rem;
+		border-radius: 1.5rem;
 	}
 
-	.portrait {
-		
-    aspect-ratio: 3 / 4; /* Relación de aspecto: más alta que ancha */
-    object-fit: cover; /* Ajusta el contenido de la imagen */
-    border-radius: 1rem; /* Bordes redondeados (opcional) */
-    box-shadow: var(--shadow-md); /* Sombra (opcional) */
+	.title {
+		font-size: var(--text-3xl);
+	}
 }
 
-
-	/* Diseño responsivo */
-	@media (min-width: 50em) {
-		.grid-container {
-			grid-template-rows: auto 1fr;
-			grid-template-columns: 2fr 1fr; /* Dos columnas en pantallas grandes */
-			gap: 2rem;
-		}
-
-		.title {
-			font-size: var(--text-5xl);
-		}
-
-		.tagline {
-			font-size: var(--text-lg);
-		}
-	}
-
-	/* Pantallas pequeñas: Todo en una sola columna */
-	@media (max-width: 50em) {
-		.grid-container {
-			grid-template-columns: 1fr; /* Una columna */
-			grid-template-rows: auto auto auto auto; /* Cada elemento en su propia fila */
-			gap: 1rem;
-		}
-
-		.content-area {
-			grid-template-columns: 1fr; /* Una columna para todo */
-			grid-template-rows: auto auto auto; /* Cada elemento en su propia fila */
-		}
-
-		.tagline {
-			grid-column: 1; /* Ocupa toda la fila */
-		}
-
-		.carrusel {
-			grid-column: 1; /* Ocupa toda la fila */
-			grid-row: auto;
-		}
-
-		.image-container {
-			grid-column: 1; /* Ocupa toda la fila */
-			grid-row: auto;
-		}
-
-		.portrait {
-			width: 100%; /* Imagen ocupa todo el ancho */
-			height: auto; /* Mantiene proporción */
-		}
-	}
 </style>

@@ -26,7 +26,7 @@ try {
         .execute();                          // Ejecuta la búsqueda
     
     // Ordena las imágenes alfabéticamente por el campo 'display_name'
-    images = resources.sort((a: ImageData, b: ImageData) => a.display_name.localeCompare(b.display_name));
+    images = resources.sort((a: ImageData, b: ImageData) => b.display_name.localeCompare(a.display_name));
 } catch (error) {
     console.error('Error al buscar imágenes:', error);
     throw new Error('No se pudieron obtener las imágenes de la carpeta.');

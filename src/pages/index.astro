@@ -1,38 +1,34 @@
 ---
 // Importaciones y código existente...
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
-import Carrusel from '../components/Carrusel.astro';
-import ContactCTA from '../components/ContactCTA.astro';
-import Skills from '../components/Skills.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import Carrusel from "../components/Carrusel.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+import Skills from "../components/Skills.astro";
+import Clientes from "../components/Clientes.astro";
+---
 
---- 
+<BaseLayout lang="es">
+	<div class="stack gap-20 lg:gap-48">
+		<div class="wrapper stack gap-8 lg:gap-20">
+			<header class="hero">
+				<Hero
+					title="Ilustrador profesional y artista conceptual"
+				>
+					<Carrusel />
+				</Hero>
+			</header>
 
-<BaseLayout lang='es'>
-    <div class="stack gap-20 lg:gap-48">
-        <div class="wrapper stack gap-8 lg:gap-20">
-            <header class="hero">
-                <Hero
-                    title="Ilustrador profesional y artista conceptual"
-                    tagline=""
-                    align="start"
-                >
-				<Carrusel/>
-                </Hero>
-            </header>
-            
-            <Skills />
+			<Skills />
 
+			<ContactCTA />
 			
-            
-            <ContactCTA />
-        </div>
-    </div>
+			<Clientes />
+		</div>
+	</div>
 </BaseLayout>
 
-
 <style>
-
 	.section {
 		display: grid;
 		gap: 2rem;
@@ -57,12 +53,12 @@ import Skills from '../components/Skills.astro';
 	@media (min-width: 50em) {
 		.section {
 			grid-template-columns: repeat(4, 1fr);
-			grid-template-areas: 'header header header header' 'gallery gallery gallery gallery';
+			grid-template-areas: "header header header header" "gallery gallery gallery gallery";
 			gap: 5rem;
 		}
 
 		.section.with-cta {
-			grid-template-areas: 'header header header cta' 'gallery gallery gallery gallery';
+			grid-template-areas: "header header header cta" "gallery gallery gallery gallery";
 		}
 
 		.section-header {
@@ -85,28 +81,6 @@ import Skills from '../components/Skills.astro';
 
 		.cta {
 			grid-area: cta;
-		}
-	}
-
-	/* ====================================================== */
-
-	.mention-card {
-		display: flex;
-		height: 7rem;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		border: 1px solid var(--gray-800);
-		border-radius: 1.5rem;
-		color: var(--gray-300);
-		background: var(--gradient-subtle);
-		box-shadow: var(--shadow-sm);
-	}
-
-	@media (min-width: 50em) {
-		.mention-card {
-			border-radius: 1.5rem;
-			height: 9.5rem;
 		}
 	}
 </style>

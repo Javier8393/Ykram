@@ -1,72 +1,108 @@
 ---
-import Icon from './Icon.astro';
-import type { iconPaths } from './IconPaths';
+import Icon from "./Icon.astro";
+import type { iconPaths } from "./IconPaths";
 
-const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[] = [
-	{ label: 'Spotify', href: 'https://open.spotify.com/show/1CI2iK8Rv4AQWCvazJd2fI?si=o6FCuhZ1QTuXzPLuFRpa_g&nd=1&dlsi=a826e8b43be14771', icon: 'spotify' },
-	{ label: 'Ivoox', href: 'https://www.ivoox.com/podcast-camino-del-ilustrador_sq_f1831710_1.html', icon: 'ivoox' },
-	{ label: 'Youtube', href: 'https://youtube.com/@elcaminodelilustrador', icon: 'youtube' },
-	{ label: 'Apple Podcast', href: 'https://podcasts.apple.com/es/podcast/el-camino-del-ilustrador/id1493738985', icon: 'apple' },
+const iconLinks: {
+	label: string;
+	href: string;
+	icon: keyof typeof iconPaths;
+}[] = [
+	{
+		label: "Spotify",
+		href: "https://open.spotify.com/show/1CI2iK8Rv4AQWCvazJd2fI?si=o6FCuhZ1QTuXzPLuFRpa_g&nd=1&dlsi=a826e8b43be14771",
+		icon: "spotify",
+	},
+	{
+		label: "Ivoox",
+		href: "https://www.ivoox.com/podcast-camino-del-ilustrador_sq_f1831710_1.html",
+		icon: "ivoox",
+	},
+	{
+		label: "Youtube",
+		href: "https://youtube.com/@elcaminodelilustrador",
+		icon: "youtube",
+	},
+	{
+		label: "Apple Podcast",
+		href: "https://podcasts.apple.com/es/podcast/el-camino-del-ilustrador/id1493738985",
+		icon: "apple",
+	},
 ];
 ---
 
 <section class="box skills">
-	
 	<div class="stack gap-1 lg:gap-2">
-		<h2><Icon icon="expert" color="var(--accent-regular)" size="2.5rem"  /> Experiencia </h2>
-		<br>
-		<p>Desde 2017 he trabajado en proyectos internacionales, en areas como: Juegos de mesa, Libros, Cine y Videojuegos.
-			<br>Para mi cada proyecto es unico y especial. Pongo toda mi creatividad 
-			y mi experiencia a tu disposicion para lograr un resultado de alta calidad.
+		<h2>
+			<Icon icon="expert" color="var(--accent-regular)" size="2.5rem" />
+			Experiencia
+		</h2>
+		<p>
+			Desde 2017 he trabajado en proyectos internacionales, en áreas como:
+			Juegos de mesa, Libros, Cine y Videojuegos.
+			<br />Para mí, cada proyecto es único y especial. Pongo toda mi
+			creatividad y experiencia a tu disposición para lograr un resultado
+			de alta calidad.
 		</p>
 	</div>
+
 	<div class="stack gap-1 lg:gap-2">
 		<h2>
 			<div class="socials">
-				{
-					iconLinks.map(({ href, icon, label }) => (
-						<a href={href} class="social">
-							
-							<Icon icon={icon} />
-						</a>
-					))
-				}
-			
-			</div> Podcast:<br> El Camino del ilustrador 
-			
-			
+				<div class="icons">
+					{
+						iconLinks.map(({ href, icon, label }) => (
+							<a href={href} class="social" title={label}>
+								<Icon
+									color="var(--accent-regular)"
+									size="2.5rem"
+									icon={icon}
+								/>
+							</a>
+						))
+					}
+				</div>
+				<span class="podcast-label">Podcast:</span>
+			</div>
 		</h2>
-		<br>
+		<h5>El Camino del ilustrador</h5>
 		<p>
-			Un programa dedicado al dibujo con entrevistas a profesionales de distintas areas. 
-			<br><br> 
-			Aquí hablaremos de actualidad 
-			y diferentes procesos creativos. ¡Nos vemos en el camino!</p>
+			Un programa dedicado al dibujo con entrevistas a profesionales de
+			distintas áreas.
+			<br /><br />
+			Aquí hablaremos de actualidad y diferentes procesos creativos. ¡Nos vemos
+			en el camino!
+		</p>
 	</div>
 </section>
 
 <style>
 	.box {
-	border: 1px solid var(--gray-800);
-	border-radius: 0.75rem;
-	padding: 1.5rem;
-	background-color: var(--gray-999);
-	box-shadow: var(--shadow-sm);
-	width: 100%; /* Asegura que ocupe el ancho completo */
-}
+		border: 1px solid var(--gray-800);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+		background-color: var(--gray-999);
+		box-shadow: var(--shadow-sm);
+		width: 100%; 
+	}
 
-.skills {
-	display: grid;
-	grid-template-columns: 1fr; /* 1 columna por defecto */
-	gap: 3rem;
-	width: 100%; /* Abarca todo el ancho */
-}
+	.skills {
+		display: grid;
+		grid-template-columns: 1fr; 
+		gap: 3rem;
+		width: 100%; 
+	}
 
-.socials {
+	.socials {
 		display: flex;
 		flex-wrap: wrap;
-		
+		align-items: center; 
+		gap: 0.5rem;
 		font-size: var(--icon-size);
+	}
+
+	.icons {
+		display: flex;
+		gap: 0.5rem; 
 	}
 
 	.social {
@@ -77,34 +113,50 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 		transition: color var(--theme-transition);
 	}
 
-/* Pantallas medianas y grandes: 2 columnas */
-@media (min-width: 50em) {
-	.skills {
-		grid-template-columns: repeat(2, 1fr); /* 2 columnas */
-		gap: 5rem; /* Ajusta la separación entre columnas */
-	}
-}
-
-/* Estilo de texto */
-.skills h2 {
-	font-size: var(--text-lg);
-}
-
-.skills p {
-	color: var(--gray-100);
-	font-size: var(--text-2xl);
-}
-
-/* Ajustes para pantallas más grandes */
-@media (min-width: 75em) {
-	.box {
-		border-radius: 1.5rem;
-		padding: 2.5rem;
+	.podcast-label {
+		margin-left: 1rem; 
 	}
 
+	/* Estilo de texto para moviles*/
 	.skills h2 {
-		font-size: var(--text-3xl);
+		font-size: var(--text-md);
 	}
-}
 
+	.skills h5 {
+		font-size: var(--text-md);
+	}
+
+	.skills p {
+		font-size: var(--text-sm);
+	}
+
+	/* Texto para pantalla tablet */
+	@media (min-width: 50em) {
+		.skills {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 5rem;
+		}
+
+		.socials {
+			flex-direction: row;
+			text-align: center;
+		}
+	}
+
+	/* Texto para pantalla pc */
+
+	@media (min-width: 75em) {
+		.box {
+			border-radius: 1.5rem;
+			padding: 2.5rem;
+		}
+
+		.skills h2 {
+			font-size: var(--text-3xl);
+		}
+
+		.skills p {
+			font-size: var(--text-lg);
+		}
+	}
 </style>

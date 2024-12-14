@@ -1,0 +1,247 @@
+---
+const clientes = [
+    {
+        imagen: "../assets/clientes/01_op_Alan.jpg",
+        nombre: "Alan M.Donald",
+        puesto: "Director de arte Kodem",
+        valoracion: "¡Trabajar con Ykram es excelente! Es un artista responsable, comprometido, diligente y profesional, además de que la claridad de sus ilustraciones jamás decepciona. ¡Recomiendo ampliamente su trabajo!",
+    },
+    {
+        imagen: "../assets/clientes/02_op_David.jpg",
+        nombre: "David Salvador Saez",
+        puesto: "Escritor y docente",
+        valoracion: "Mi primer libro de literatura infantil y juvenil fue ilustrado por Ykram. Tuvo la capacidad de mejorar el diseño anterior de mi personaje principal y destacó en todo momento por su profesionalidad, cordialidad y capacidad de trabajo. Gracias por todo",
+    },
+    {
+        imagen: "../assets/clientes/03_op_Alejandro.jpg",
+        nombre: "Alejandro Mozos Fernández",
+        puesto: "Creador de “El favor del Rey”",
+        valoracion: "Contacté casi por suerte con Ykram a través de un post cuando buscaba ilustrador para mi juego de mesa. Rápidamente cogimos química cuando le conté sobre el proyecto y le dio vida a cada una de sus cartas y personajes, en tiempo récord, y con una calidad de detalle increíble. Dudo que hubiese podido quedar mejor el proyecto. Muy agradecido con él.",
+    },
+    {
+        imagen: "../assets/clientes/04_op_Fran.jpg",
+        nombre: "Fran Grybbus",
+        puesto: "Creador de contenido",
+        valoracion: "Contacté con Ykram para colaborar con mi proyecto de creación de contenido, la experiencia fue gratamente sorprendente, me ayudó a desarrollar ilustraciones acordes a mi marca personal de forma eficaz para youtube, instagram y twitch.¡Gran profesional y mejor artista!",
+    },
+    {
+        imagen: "../assets/clientes/machango_games.jpg",
+        nombre: "Machango Games",
+        puesto: "Estudio de juegos de mesa",
+        valoracion: "Nuestro primer juego fue ilustrado por Ykram tras valorar a muchos ilustradores y desde que nos dio el boceto supimos que queríamos trabajar con él. No se limita a diseñar lo que le solicitas sino que le da una lógica y un toque personal que llama la atención desde el inicio. Tomó el proyecto como suyo y se implicó al máximo para subir al juego a otro nivel. ¡Muchísimas gracias!",
+    },
+];
+---
+
+<section class="box clients carrusel">
+    <h5>Opiniones de clientes:</h5>
+    <div class="carousel-track">
+        {
+            clientes.map(({ imagen, nombre, puesto, valoracion }) => (
+                <div class="carousel-slide">
+                    <div class="cliente-img">
+                        <img src={imagen} alt={nombre} class="cliente-imagen" />
+                    </div>
+                    <div class="cliente-info">
+                        <h3>{nombre}</h3>
+                        <h6>{puesto}</h6>
+                    </div>
+                    <div class="cliente-valoracion">
+                        <p>{valoracion}</p>
+                    </div>
+                </div>
+            ))
+        }
+    </div>
+</section>
+
+<style>
+    /* Estructura general */
+/* Estructura general */
+.box {
+    border: 1px solid var(--gray-800);
+    border-radius: 1rem;
+    padding: 2rem;
+    background-color: var(--gray-999);
+    box-shadow: var(--shadow-sm);
+    margin: auto;
+    width: 100%;
+    overflow: visible;
+}
+
+.carrusel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+/* Track con animación */
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    will-change: transform;
+    animation: slide 25s infinite;
+}
+
+/* Cada slide ocupa el ancho completo para el carrusel */
+.carousel-slide {
+    background: transparent;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    padding: 2.5rem;
+    box-sizing: border-box;
+    gap: 1.5rem;
+    min-width: 100%;
+}
+
+/* Elementos internos */
+.cliente-img img {
+    max-width: 150px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.cliente-info h3 {
+    margin: 0;
+    color: var(--gray-50);
+    font-size: var(--text-lg);
+}
+
+.cliente-info h6 {
+    margin: 0.5rem 0 0;
+    font-size: var(--text-md);
+    color: var(--gray-300);
+}
+
+.cliente-valoracion p {
+    margin: 0;
+    font-size: var(--text-md);
+    color: var(--gray-300);
+    line-height: 1.5;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+/* Animación para 5 diapositivas (5s cada una) */
+@keyframes slide {
+    /* Mantener en posición la primera diapositiva del 0% al 15% */
+    0%, 15% {
+        transform: translateX(0%);
+    }
+    /* Transición suave hacia la segunda diapositiva entre 15.1% y 20% */
+    20% {
+        transform: translateX(-100%);
+    }
+    /* Mantener la segunda diapositiva de 20.1% a 35% */
+    20.1%, 35% {
+        transform: translateX(-100%);
+    }
+    /* Ir a la tercera diapositiva de 35.1% a 40% */
+    40% {
+        transform: translateX(-200%);
+    }
+    /* Mantener la tercera diapositiva de 40.1% a 55% */
+    40.1%, 55% {
+        transform: translateX(-200%);
+    }
+    /* Ir a la cuarta diapositiva de 55.1% a 60% */
+    60% {
+        transform: translateX(-300%);
+    }
+    /* Mantener la cuarta de 60.1% a 75% */
+    60.1%, 75% {
+        transform: translateX(-300%);
+    }
+    /* Ir a la quinta de 75.1% a 80% */
+    80% {
+        transform: translateX(-400%);
+    }
+    /* Mantener la quinta de 80.1% a 100% */
+    80.1%, 100% {
+        transform: translateX(-400%);
+    }
+}
+
+/* Aplicar easing a la animación */
+.carousel-track {
+    animation: slide 25s infinite ease-in-out;
+}
+
+
+/* Layout para pantallas grandes */
+@media (min-width: 50em) {
+    /* En pantallas grandes, usar grid:
+       - Imagen a la izquierda, info arriba a la derecha, valoración abajo a la derecha */
+    .carousel-slide {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        align-items: start;
+    }
+
+    .cliente-img {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+    }
+
+    .cliente-info {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .cliente-valoracion {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .cliente-info h3 {
+        font-size: var(--text-xl);
+    }
+
+    .cliente-info h6,
+    .cliente-valoracion p {
+        font-size: var(--text-lg);
+    }
+}
+
+/* Layout para pantallas medianas y pequeñas */
+@media (max-width: 50em) {
+    .carousel-slide {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Orden: Info (1), Imagen (2), Valoración (3) */
+    .cliente-info {
+        order: 1;
+        width: 100%;
+    }
+
+    .cliente-img {
+        order: 2;
+        width: 100%;
+    }
+
+    .cliente-valoracion {
+        order: 3;
+        width: 100%;
+    }
+
+    .carousel-slide {
+        padding: 2rem;
+        gap: 1rem;
+    }
+
+    .cliente-info h3 {
+        font-size: var(--text-md);
+    }
+
+    .cliente-info h6,
+    .cliente-valoracion p {
+        font-size: var(--text-sm);
+    }
+}
+
+
+</style>
