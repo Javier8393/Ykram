@@ -20,16 +20,12 @@ export const server = {
         from: 'onboarding@resend.dev',
         to: 'gr8393@gmail.com',
         subject: 'Nuevo mensaje recibido',
-        html: `<p>name: <strong>${name}</strong>!</p>
-        <p>email: <strong>${email}</strong>!</p>
-        <p>message: <strong>${message}</strong>!</p>
+        html: `<p><strong>Nombre: </strong>${name}</p>
+        <p><strong>Email: </strong>${email}</p>
+        <p><strong>Mensaje: </strong>${message}</p>
         `
       });
 
-      if(error) console.log(error)
-      if(data) console.log(data)
-
-      return `Exito!`
     }
   })
 }

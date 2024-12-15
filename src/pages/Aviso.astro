@@ -1,9 +1,167 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-
+import Hero from '../components/Hero.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout lang="es">
-<h1>Aviso Legal</h1>
-<p>esto es un aviso</p>
+<BaseLayout title="Aviso Legal" description="Aquí está el aviso legal">
+    <div class="stack gap-20 lg:gap-48">
+        <div class="wrapper stack gap-8 lg:gap-20">
+
+            <div class="pdf-viewer">
+				<button class="nav-button prev">&#8592; </button>
+				<iframe id="pdf-frame" src="/assets/aviso/aviso.pdf#toolbar=0&navpanes=0&scrollbar=0" 
+						width="100%" height="650px" style="border: none;"></iframe>
+						<button class="nav-button next"> &#8594;</button>
+			</div>
+        </div>
+    </div>
 </BaseLayout>
+
+<script>
+    // Declaración global de variables
+    let currentIndex: number = 0; // Inicializamos el índice como un número
+    const pdfFiles: string[] = [
+        '/assets/aviso/aviso.pdf',
+        '/assets/aviso/cookiss.pdf',
+        '/assets/aviso/privacidad.pdf'
+    ];
+
+    // Función para navegar entre PDFs
+    function navigatePDF(direction: number) {
+        currentIndex += direction;
+
+        // Asegurar que el índice se mantenga en rango
+        if (currentIndex < 0) {
+            currentIndex = pdfFiles.length - 1;
+        } else if (currentIndex >= pdfFiles.length) {
+            currentIndex = 0;
+        }
+
+        const pdfFrame = document.getElementById('pdf-frame') as HTMLIFrameElement;
+
+        if (pdfFrame) {
+            pdfFrame.src = `${pdfFiles[currentIndex]}#toolbar=0&navpanes=0&scrollbar=0`;
+        } else {
+            console.error("El elemento PDF no fue encontrado.");
+        }
+    }
+
+    // Asignar eventos después de cargar el DOM
+    document.addEventListener('DOMContentLoaded', () => {
+        const prevButton = document.querySelector('.prev') as HTMLButtonElement;
+        const nextButton = document.querySelector('.next') as HTMLButtonElement;
+
+        if (prevButton && nextButton) {
+            prevButton.addEventListener('click', () => navigatePDF(-1));
+            nextButton.addEventListener('click', () => navigatePDF(1));
+        } else {
+            console.error("Los botones de navegación no fueron encontrados.");
+        }
+    });
+</script>
+
+ 
+
+
+<style>
+	.pdf-viewer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px; /* Separación entre las flechas y el PDF */
+    }
+
+    iframe {
+        flex-grow: 1; /* Que el iframe ocupe el máximo espacio posible */
+    }
+
+    .nav-button {
+        background: var(--accent-regular);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    .nav-button:hover {
+        background: var(--accent-dark);
+    }
+
+    .nav-button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .section {
+        display: grid;
+        gap: 2rem;
+    }
+
+    .with-background {
+        position: relative;
+    }
+
+    .section-header {
+        justify-self: center;
+        text-align: center;
+        max-width: 50ch;
+        font-size: var(--text-md);
+        color: var(--gray-300);
+    }
+
+    .section-header h3 {
+        font-size: var(--text-2xl);
+    }
+
+    @media (min-width: 50em) {
+        .section {
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-areas: "header header header header" "gallery gallery gallery gallery";
+            gap: 5rem;
+        }
+
+        .section.with-cta {
+            grid-template-areas: "header header header cta" "gallery gallery gallery gallery";
+        }
+
+        .section-header {
+            grid-area: header;
+            font-size: var(--text-lg);
+        }
+
+        .section-header h3 {
+            font-size: var(--text-4xl);
+        }
+
+        .with-cta .section-header {
+            justify-self: flex-start;
+            text-align: left;
+        }
+
+        .gallery {
+            grid-area: gallery;
+        }
+
+        .cta {
+            grid-area: cta;
+        }
+    }
+
+    /* Hero styles */
+    .hero {
+        border-radius: 8px;
+        border: 2px solid var(--gray-300);
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Styled embed for PDFs */
+    .styled-embed {
+        border-radius: 8px;
+        border: 2px solid var(--gray-300);
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+</style>
