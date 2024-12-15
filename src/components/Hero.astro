@@ -1,10 +1,11 @@
 ---
 interface Props {
 	title: string;
+	tagline: string;
 	align?: "start" | "center";
 }
 
-const { align = "center", title } = Astro.props;
+const { align = "center", title, tagline } = Astro.props;
 ---
 
 <div class="box">
