@@ -5,11 +5,12 @@ const lightbox = new PhotoSwipeLightbox({
     gallery: '.masonry-container',
     children: 'a',
     pswpModule: () => import('photoswipe'),
+    initialZoomLevel: 'fit',
+    secondaryZoomLevel: 1.5, // Zoom al hacer doble clic
     paddingFn: (viewportSize) => {
-        return { top: 10, bottom: 10, left: 10, right: 10 };
+        return viewportSize.x < 768
+            ? { top: 5, bottom: 5, left: 5, right: 5 } // Móviles
+            : { top: 100, bottom: 100, left: 100, right: 100 }; // Escritorio
     },
-    showHideAnimationType: 'fade', // Opción para evitar efectos de recorte
-    initialZoomLevel: 'fit' // Asegura que las imágenes se ajusten a la ventana emergente sin recortes
 });
-
 lightbox.init();
