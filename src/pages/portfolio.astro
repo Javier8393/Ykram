@@ -25,11 +25,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         display: flex;
         justify-content: center; /* Centra las imágenes en el contenedor */
         align-items: center;
-        gap: 3rem; /* Espacio entre las imágenes */
-        margin-top: 2rem; /* Espacio en la parte superior */
+        margin-top: 5rem; /* Espacio en la parte superior */
+        margin-bottom: 9rem; /* Espacio en la parte inferior */
         flex-wrap: wrap; /* Permite que las imágenes se ajusten en pantallas más pequeñas */
         width: 100%; /* Asegura que el contenedor ocupe todo el ancho de la ventana */
-        padding-bottom: 100px; /* Espacio para el footer */
+        
     }
 
     .gallery-item {
@@ -60,6 +60,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
 
     @media (max-width: 768px) {
+        .gallery-container {
+            padding-bottom: 0; /* Elimina el padding-bottom en móviles */
+        }
+        
         .gallery-item {
             max-width: 90%; /* Reduce el tamaño del contenedor en pantallas pequeñas */
         }
