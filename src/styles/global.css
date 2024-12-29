@@ -269,3 +269,110 @@ h5 {
     gap: 12rem;
   }
 }
+
+.aviso-legal {
+  line-height: 1.6; /* Espaciado cómodo para lectura */
+  padding: 20px; /* Espaciado interno */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+  max-width: 800px; /* Ancho máximo */
+  margin: 20px auto; /* Centrado */
+}
+
+/* Estilos para encabezados */
+.aviso-legal h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+}
+
+.aviso-legal h2 {
+  font-size: 1.8em;
+  font-weight: bold;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+}
+
+.aviso-legal h3 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Estilos para listas */
+.aviso-legal ul {
+  margin-left: 20px;
+  list-style: disc;
+}
+
+.aviso-legal ol {
+  margin-left: 20px;
+  list-style: decimal;
+}
+
+.aviso-legal li {
+  margin-bottom: 8px;
+}
+
+/* Estilos para párrafos */
+.aviso-legal p {
+  margin-bottom: 16px;
+  text-align: justify; /* Justificado para una apariencia profesional */
+}
+
+/* Estilos para enlaces */
+.aviso-legal a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.aviso-legal a:hover {
+  text-decoration: underline;
+}
+
+/* Estilos para citas */
+.aviso-legal blockquote {
+  margin: 20px 0;
+  padding: 10px 20px;
+  font-style: italic;
+}
+
+/* Estilos para tablas */
+.aviso-legal table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.aviso-legal th, .aviso-legal td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.aviso-legal th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+/* Estilos para código */
+.aviso-legal code {
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.aviso-legal pre {
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+/* Estilos para resaltar texto fuerte y enfatizado */
+.aviso-legal strong {
+  font-weight: bold;
+}
+
+.aviso-legal em {
+  font-style: italic;
+}
