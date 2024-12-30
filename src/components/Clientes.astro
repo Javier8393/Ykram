@@ -57,7 +57,6 @@ const clientes = [
 </section>
 
 <style>
-    /* Estructura general */
 /* Estructura general */
 .box {
     border: 1px solid var(--gray-800);
@@ -123,49 +122,54 @@ const clientes = [
     overflow-wrap: break-word;
 }
 
-/* Animación para 5 diapositivas (5s cada una) */
 @keyframes slide {
-    /* Mantener en posición la primera diapositiva del 0% al 15% */
-    0%, 15% {
+    /* Mantener en posición la primera diapositiva del 0% al 18.18% */
+    0%, 18.18% {
         transform: translateX(0%);
     }
-    /* Transición suave hacia la segunda diapositiva entre 15.1% y 20% */
+    /* Transición suave hacia la segunda diapositiva entre 18.19% y 20% */
     20% {
         transform: translateX(-100%);
     }
-    /* Mantener la segunda diapositiva de 20.1% a 35% */
-    20.1%, 35% {
+    /* Mantener la segunda diapositiva de 20.1% a 38.18% */
+    20.1%, 38.18% {
         transform: translateX(-100%);
     }
-    /* Ir a la tercera diapositiva de 35.1% a 40% */
+    /* Ir a la tercera diapositiva de 38.19% a 40% */
     40% {
         transform: translateX(-200%);
     }
-    /* Mantener la tercera diapositiva de 40.1% a 55% */
-    40.1%, 55% {
+    /* Mantener la tercera diapositiva de 40.1% a 58.18% */
+    40.1%, 58.18% {
         transform: translateX(-200%);
     }
-    /* Ir a la cuarta diapositiva de 55.1% a 60% */
+    /* Ir a la cuarta diapositiva de 58.19% a 60% */
     60% {
         transform: translateX(-300%);
     }
-    /* Mantener la cuarta de 60.1% a 75% */
-    60.1%, 75% {
+    /* Mantener la cuarta diapositiva de 60.1% a 78.18% */
+    60.1%, 78.18% {
         transform: translateX(-300%);
     }
-    /* Ir a la quinta de 75.1% a 80% */
+    /* Ir a la quinta diapositiva de 78.19% a 80% */
     80% {
         transform: translateX(-400%);
     }
-    /* Mantener la quinta de 80.1% a 100% */
-    80.1%, 100% {
+    /* Mantener la quinta diapositiva de 80.1% a 98% */
+    80.1%, 98% {
         transform: translateX(-400%);
+    }
+    /* Transición suave de vuelta a la primera diapositiva (98.01% - 100%) */
+    100% {
+        transform: translateX(0%);
     }
 }
 
+
+
 /* Aplicar easing a la animación */
 .carousel-track {
-    animation: slide 25s infinite ease-in-out;
+    animation: slide 75s infinite ease-in-out;
 }
 
 

@@ -15,6 +15,7 @@ import Icon from "./Icon.astro";
     <h2>
       ¿Tienes una idea en mente? <br />!Escribeme y la hacemos realidad juntos!
     </h2>
+    <label id="notification" class="notification hidden"></label>
   </div>
 
   <form>
@@ -56,23 +57,77 @@ import Icon from "./Icon.astro";
       </div>
     </div>
   </form>
+  
 </aside>
 
 <script>
   import { actions } from "astro:actions";
 
-  const form = document.querySelector("form");
-  form?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const formData = new FormData(form);
+const form = document.querySelector<HTMLFormElement>("form");
+const notification = document.getElementById("notification");
+
+form?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const formData = new FormData(form);
+
+  try {
     const { error, data } = await actions.contact(formData);
-    if (error) console.log(error);
-    if (data) console.log(data);
+
+    if (error) {
+      throw new Error("No se pudo enviar el mensaje. Inténtalo de nuevo.");
+    }
+
+    showNotification("¡Tu mensaje se ha enviado correctamente!", "success");
     form.reset();
-  });
+  } catch (err) {
+    const errorMessage = (err instanceof Error) ? err.message : "Hubo un problema al enviar el mensaje.";
+    showNotification(errorMessage, "error");
+  }
+});
+
+function showNotification(message: string, type: "success" | "error") {
+  if (!notification) {
+    console.error("El elemento de notificación no se encontró en el DOM.");
+    return;
+  }
+
+  notification.textContent = message;
+  notification.classList.remove("hidden", "success", "error");
+  notification.classList.add(type);
+
+  setTimeout(() => {
+    notification.classList.add("hidden");
+  }, 3000);
+}
+
 </script>
 
 <style>
+ .notification {
+  border-radius: 0.5rem;
+  font-size: var(--text-md);
+  box-shadow: var(--shadow-md);
+  opacity: 1;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.notification.hidden {
+  opacity: 0;
+  visibility: hidden;
+  height: 0; 
+  overflow: hidden; /* Prevenir desbordamiento */
+}
+
+.notification.success {
+  color: var(--accent-regular);;
+}
+
+.notification.error {
+  color: red;
+}
+
+
+
   .empresas {
     margin: auto;
   }
