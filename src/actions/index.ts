@@ -17,7 +17,7 @@ export const server = {
     }),
     handler: async ({name, email, message}) => {
       const { data, error} = await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: 'contacto@ykramstudio.com',
         to: 'gr8393@gmail.com',
         subject: 'Nuevo mensaje recibido',
         html: `<p><strong>Nombre: </strong>${name}</p>

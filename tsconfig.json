@@ -8,6 +8,5 @@
     "jsx": "preserve",
     "esModuleInterop": true, // Añadir esta línea para la interoperabilidad de módulos
     "skipLibCheck": true // Esto evita los errores de tipos en bibliotecas
-  },
-  "include": ["src/**/*.ts", "src/**/*.astro"]
+  }
 }

@@ -27,6 +27,9 @@ interface ProjectData {
 // Inicializa un array para almacenar los proyectos
 let projects: ProjectData[] = [];
 
+// URL predeterminada para la imagen destacada
+const DEFAULT_FEATURED_IMAGE = "/assets/interrogacion.jpg";
+
 try {
     // Obtiene las carpetas en Cloudinary
     const { folders }: { folders: FolderData[] } =
@@ -62,7 +65,7 @@ try {
                     // Genera la URL de la imagen si se encuentra
                     const featuredImageUrl = matchedImage
                         ? matchedImage.secure_url
-                        : null; // Maneja el caso donde no se encuentra la imagen
+                        : DEFAULT_FEATURED_IMAGE; // Usa la imagen predeterminada
 
                     return {
                         ...projectData,

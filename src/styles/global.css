@@ -270,6 +270,56 @@ h5 {
   }
 }
 
+.box {
+	border: 1px solid var(--gray-800);
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	background-color: var(--gray-999);
+	box-shadow: var(--shadow-sm);
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.enlace-contenedor {
+  text-align: right; /* Asegurar alineación a la derecha del contenido */
+}
+
+.aviso-enlace,
+.scroll-to-top {
+  position: fixed; /* Asegura que ambos elementos estén fijos */
+  margin-top: 137px;
+  right: 20px; /* Misma distancia del lado derecho */
+  text-decoration: none; /* Eliminar subrayado */
+  color: var(--gray-999); /* Color del texto */
+  background-color: var(--accent-regular); /* Fondo */
+  padding: 10px 15px; /* Espaciado interno */
+  border-radius: 5px; /* Bordes redondeados */
+  font-weight: bold; /* Hacer el texto más visible */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
+  transition: background-color 0.3s, transform 0.3s; /* Transiciones suaves */
+}
+
+.aviso-enlace {
+  top: 20px; /* Alineado en la parte superior */
+}
+
+.scroll-to-top {
+  bottom: 20px; /* Alineado en la parte inferior */
+  border-radius: 50%; /* Forma circular para el botón */
+  padding: 15px; /* Botón ligeramente más grande */
+  font-size: 16px; /* Texto ligeramente más grande */
+  z-index: 1000; /* Asegurar que esté sobre otros elementos */
+}
+
+.aviso-enlace:hover,
+.scroll-to-top:hover {
+  background-color: var(--accent-dark); /* Cambiar fondo al pasar el ratón */
+  transform: scale(1.05); /* Aumentar ligeramente el tamaño */
+}
+
+
+
 .aviso-legal {
   line-height: 1.6; /* Espaciado cómodo para lectura */
   padding: 20px; /* Espaciado interno */
