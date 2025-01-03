@@ -57,35 +57,46 @@ import Icon from "./Icon.astro";
       </div>
     </div>
   </form>
-  
 </aside>
 
 <script>
   import { actions } from "astro:actions";
 
-const form = document.querySelector<HTMLFormElement>("form");
-const notification = document.getElementById("notification");
+  const form = document.querySelector<HTMLFormElement>("form");
+  const notification = document.getElementById("notification");
 
-form?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const formData = new FormData(form);
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  try {
-    const { error, data } = await actions.contact(formData);
+    try {
+      // Obtener el token de reCAPTCHA
+      const recaptchaToken = await grecaptcha.execute(import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY, {
+        action: "submit",
+      });
 
-    if (error) {
-      throw new Error("No se pudo enviar el mensaje. Inténtalo de nuevo.");
+      // Crear FormData y agregar el token de reCAPTCHA
+      const formData = new FormData(form);
+      formData.append("recaptchaToken", recaptchaToken);
+
+      // Enviar datos al servidor
+      const { error, data } = await actions.contact(formData);
+
+      if (error) {
+        throw new Error("No se pudo enviar el mensaje. Inténtalo de nuevo.");
+      }
+
+      showNotification("¡Tu mensaje se ha enviado correctamente!", "success");
+      form.reset();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Hubo un problema al enviar el mensaje.";
+      showNotification(errorMessage, "error");
     }
+  });
 
-    showNotification("¡Tu mensaje se ha enviado correctamente!", "success");
-    form.reset();
-  } catch (err) {
-    const errorMessage = (err instanceof Error) ? err.message : "Hubo un problema al enviar el mensaje.";
-    showNotification(errorMessage, "error");
-  }
-});
-
-function showNotification(message: string, type: "success" | "error") {
+  function showNotification(message: string, type: "success" | "error") {
   if (!notification) {
     console.error("El elemento de notificación no se encontró en el DOM.");
     return;
@@ -102,31 +113,32 @@ function showNotification(message: string, type: "success" | "error") {
 
 </script>
 
+
 <style>
- .notification {
-  border-radius: 0.5rem;
-  font-size: var(--text-md);
-  box-shadow: var(--shadow-md);
-  opacity: 1;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
+  .notification {
+    border-radius: 0.5rem;
+    font-size: var(--text-md);
+    box-shadow: var(--shadow-md);
+    opacity: 1;
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s ease;
+  }
 
-.notification.hidden {
-  opacity: 0;
-  visibility: hidden;
-  height: 0; 
-  overflow: hidden; /* Prevenir desbordamiento */
-}
+  .notification.hidden {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden; /* Prevenir desbordamiento */
+  }
 
-.notification.success {
-  color: var(--accent-regular);;
-}
+  .notification.success {
+    color: var(--accent-regular);
+  }
 
-.notification.error {
-  color: red;
-}
-
-
+  .notification.error {
+    color: red;
+  }
 
   .empresas {
     margin: auto;
