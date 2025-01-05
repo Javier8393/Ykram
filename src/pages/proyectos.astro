@@ -1,90 +1,57 @@
 ---
-// Importa el layout base
-import cloudinary from "../cloudinary";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchFolders } from "../cloudinary/fetchFolders";
+import { fetchImageByName } from "../cloudinary/fetchImages";
+import { fetchProjectData } from "../cloudinary/fetchProjectData";
 
-// Define la interfaz para las imágenes de Cloudinary
-interface CloudinaryImage {
-    public_id: string;
-    secure_url: string;
-    display_name: string; // Añadir display_name para la comparación
-}
-
-// Define la interfaz para las carpetas
-interface FolderData {
-    name: string;
-    path: string;
-}
-
-// Define la interfaz para los datos del proyecto
 interface ProjectData {
     name: string;
     description: string;
     featured_image: string | null;
-    folder: string; // Ruta de la carpeta
+    folder: string;
 }
 
-// Inicializa un array para almacenar los proyectos
+const DEFAULT_FEATURED_IMAGE = "/assets/interrogacion.jpg";
 let projects: ProjectData[] = [];
 
-// URL predeterminada para la imagen destacada
-const DEFAULT_FEATURED_IMAGE = "/assets/interrogacion.jpg";
-
 try {
-    // Obtiene las carpetas en Cloudinary
-    const { folders }: { folders: FolderData[] } =
-        await cloudinary.api.sub_folders("Proyectos");
+    const folders = await fetchFolders("Proyectos");
 
-    projects = await Promise.all(
-        folders.map(async (folder: FolderData) => {
+    projects = (await Promise.all(
+        folders.map(async (folder) => {
             try {
-                // Especificar el tipo de las imágenes
-                const { resources: images }: { resources: CloudinaryImage[] } =
-                    await cloudinary.search
-                        .expression(
-                            `folder:${folder.path} AND resource_type:image`,
-                        )
-                        .execute();
+                const projectData = await fetchProjectData(folder.path);
 
-                const { resources: jsonResources } = await cloudinary.search
-                    .expression(
-                        `folder:${folder.path} AND filename:project.json`,
-                    )
-                    .execute();
-
-                if (jsonResources.length > 0) {
-                    const response = await fetch(jsonResources[0].secure_url);
-                    const projectData = await response.json();
-
-                    // Buscar la imagen que coincida usando display_name
-                    const matchedImage = images.find(
-                        (image: CloudinaryImage) =>
-                            image.display_name === projectData.featured_image,
+                if (projectData) {
+                    // Busca directamente la imagen destacada en Cloudinary
+                    const matchedImage = await fetchImageByName(
+                        folder.path,
+                        projectData.featured_image || ""
                     );
 
-                    // Genera la URL de la imagen si se encuentra
                     const featuredImageUrl = matchedImage
                         ? matchedImage.secure_url
-                        : DEFAULT_FEATURED_IMAGE; // Usa la imagen predeterminada
+                        : DEFAULT_FEATURED_IMAGE;
 
+                    // Retorna un objeto con el tipo exacto de ProjectData
                     return {
-                        ...projectData,
-                        folder: folder.path,
+                        name: projectData.name,
+                        description: projectData.description,
                         featured_image: featuredImageUrl,
-                    };
+                        folder: folder.path,
+                    } as ProjectData;
                 }
+
+                return null; // Si no hay datos válidos
             } catch (error) {
                 console.error(
-                    `Error al cargar el JSON del proyecto ${folder.name}:`,
-                    error,
+                    `Error al procesar la carpeta ${folder.name}:`,
+                    error
                 );
+                return null;
             }
-            return null;
-        }),
-    );
-
-    // Filtra proyectos nulos en caso de que no se haya encontrado el JSON
-    projects = projects.filter((project) => project !== null);
+        })
+    )).filter((project): project is ProjectData => project !== null);
 } catch (error) {
     console.error("Error al cargar los proyectos:", error);
 }
@@ -92,30 +59,31 @@ try {
 
 <BaseLayout>
     <div class="projects-list">
-        {
-            projects.length > 0 ? (
-                projects.map((project) => (
-                    <a
-                        href={`/${project.folder.split("/")[1]}`}
-                        class="project-item"
-                    >
-                        <img
-                            src={project.featured_image}
-                            alt={project.name}
-                            class="project-image"
-                        />
-                        <div class="project-details">
-                            <h3>{project.name}</h3>
-                            <p>{project.description}</p>
-                        </div>
-                    </a>
-                ))
-            ) : (
-                <p>No hay proyectos disponibles.</p>
-            )
-        }
+        {projects.length > 0 ? (
+            projects.map((project) => (
+                <a
+                    href={`/${project.folder.split("/")[1]}`}
+                    class="project-item"
+                >
+                    <img
+                        src={project.featured_image}
+                        alt={project.name}
+                        class="project-image"
+                    />
+                    <div class="project-details">
+                        <h3>{project.name}</h3>
+                        <p>{project.description}</p>
+                    </div>
+                </a>
+            ))
+        ) : (
+            <p>No hay proyectos disponibles.</p>
+        )}
     </div>
 </BaseLayout>
+
+
+
 
 <style>
     .projects-list {
@@ -173,11 +141,10 @@ try {
         }
 
         .project-image {
-        width: 300px;
-        height: 300px;
-        border-radius: 1.25rem;
-        object-fit: fill;
-    }
-
+            width: 300px;
+            height: 300px;
+            border-radius: 1.25rem;
+            object-fit: fill;
+        }
     }
 </style>

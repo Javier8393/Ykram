@@ -38,7 +38,7 @@ export const server = {
       }
     
       // Continuar con el envío de correo
-      const { data, error } = await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: "contacto@ykramstudio.com",
         to: "ykramstudio@gmail.com",
         subject: "Nuevo mensaje recibido",
