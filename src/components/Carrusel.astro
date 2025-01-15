@@ -1,33 +1,13 @@
 ---
-import cloudinary from "../cloudinary";
-
-// Carrusel.astro
-
-// Definir tipos
-interface Image {
-  url: string;
-  alt: string;
-}
-
-const folderName = 'Carrusel';
-let images: Image[] = [];
-try {
-  const { resources } = await cloudinary.search
-    .expression(`folder:${folderName} AND resource_type:image`)
-    .max_results(30)
-    .execute();
-  images = resources.map((image: any) => ({
-    url: image.secure_url,
-    alt: image.public_id,
-  }));
-} catch (error) {
-  console.error('Error al obtener imágenes de Cloudinary:', error);
-}
+const images = [
+  { url: '/assets/carrusel/image1.jpg', alt: 'Imagen 1' },
+  { url: '/assets/carrusel/image2.jpg', alt: 'Imagen 2' },
+  { url: '/assets/carrusel/image3.jpg', alt: 'Imagen 3' },
+];
 ---
-
 <div class="carousel">
   <div class="carousel-track">
-    {images.map((image: Image) => (
+    {images.map((image) => (
       <img src={image.url} class="carousel-slide" alt={image.alt} />
     ))}
   </div>

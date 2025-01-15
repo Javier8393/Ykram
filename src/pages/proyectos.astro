@@ -1,8 +1,8 @@
 ---
+
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { fetchFolders } from "../cloudinary/fetchFolders";
-import { fetchImageByName } from "../cloudinary/fetchImages";
-import { fetchProjectData } from "../cloudinary/fetchProjectData";
+import { loadProjects } from "../cloudinary/loadProjects";
+
 
 interface ProjectData {
     name: string;
@@ -11,50 +11,8 @@ interface ProjectData {
     folder: string;
 }
 
-const DEFAULT_FEATURED_IMAGE = "/assets/interrogacion.jpg";
-let projects: ProjectData[] = [];
+const projects: ProjectData[] = await loadProjects();
 
-try {
-    const folders = await fetchFolders("Proyectos");
-
-    projects = (await Promise.all(
-        folders.map(async (folder) => {
-            try {
-                const projectData = await fetchProjectData(folder.path);
-
-                if (projectData) {
-                    // Busca directamente la imagen destacada en Cloudinary
-                    const matchedImage = await fetchImageByName(
-                        folder.path,
-                        projectData.featured_image || ""
-                    );
-
-                    const featuredImageUrl = matchedImage
-                        ? matchedImage.secure_url
-                        : DEFAULT_FEATURED_IMAGE;
-
-                    // Retorna un objeto con el tipo exacto de ProjectData
-                    return {
-                        name: projectData.name,
-                        description: projectData.description,
-                        featured_image: featuredImageUrl,
-                        folder: folder.path,
-                    } as ProjectData;
-                }
-
-                return null; // Si no hay datos válidos
-            } catch (error) {
-                console.error(
-                    `Error al procesar la carpeta ${folder.name}:`,
-                    error
-                );
-                return null;
-            }
-        })
-    )).filter((project): project is ProjectData => project !== null);
-} catch (error) {
-    console.error("Error al cargar los proyectos:", error);
-}
 ---
 
 <BaseLayout>
@@ -62,12 +20,12 @@ try {
         {projects.length > 0 ? (
             projects.map((project) => (
                 <a
-                    href={`/${project.folder.split("/")[1]}`}
+                    href={`/${encodeURIComponent(project.folder.split("/")[1])}`}
                     class="project-item"
                 >
                     <img
                         src={project.featured_image}
-                        alt={project.name}
+                        alt={project.name || "Imagen de proyecto"}
                         class="project-image"
                     />
                     <div class="project-details">
@@ -81,9 +39,6 @@ try {
         )}
     </div>
 </BaseLayout>
-
-
-
 
 <style>
     .projects-list {
@@ -108,7 +63,7 @@ try {
         width: 100%;
         height: auto;
         border-radius: 1.25rem;
-        object-fit: fill;
+        object-fit: cover;
     }
 
     .project-details h3 {
@@ -144,7 +99,7 @@ try {
             width: 300px;
             height: 300px;
             border-radius: 1.25rem;
-            object-fit: fill;
+            object-fit: cover;
         }
     }
 </style>
