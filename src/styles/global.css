@@ -142,7 +142,6 @@ body {
   color: var(--gray-200);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
-  line-height: 1.5;
 }
 
 *,
@@ -258,9 +257,6 @@ h5 {
   }
   .lg\:gap-15 {
     gap: 3.75rem;
-  }
-  .lg\:gap-20 {
-    gap: 5rem;
   }
   .lg\:gap-30 {
     gap: 7.5rem;

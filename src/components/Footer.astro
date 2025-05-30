@@ -1,21 +1,64 @@
 ---
 import Icon from './Icon.astro';
+import { getLanguage } from '../utils/i18n';
+
+interface Props {
+	lang?: 'en' | 'es';
+}
+
+// Usar el idioma proporcionado o determinarlo de la URL
+const lang = Astro.props.lang || getLanguage(Astro.url.pathname);
+
+// Textos según el idioma
+const texts = {
+	es: {
+		rights: "Todos los derechos reservados",
+		legal: "Aviso Legal",
+		privacy: "Política de Privacidad",
+		cookies: "Política de Cookies",
+		developed: "Desarrollado por"
+	},
+	en: {
+		rights: "All rights reserved",
+		legal: "Legal Notice",
+		privacy: "Privacy Policy",
+		cookies: "Cookie Policy",
+		developed: "Developed by"
+	}
+};
+
+const currentTexts = texts[lang];
+
+// Rutas según el idioma
+const routes = {
+	es: {
+		legal: "/aviso-legal",
+		privacy: "/privacidad",
+		cookies: "/cookies"
+	},
+	en: {
+		legal: "/en/legal-notice",
+		privacy: "/en/privacy-policy",
+		cookies: "/en/cookies"
+	}
+};
+
+const currentRoutes = routes[lang];
 ---
 
 <footer>
 	<div class="group">
 		<p>
-			Desarrollado por <a href="https://github.com/Javier8393">Javier Galera</a> con <a href="https://astro.build/">Astro</a>
+			{currentTexts.developed} <a href="https://github.com/Javier8393">Javier Galera</a> con <a href="https://astro.build/">Astro</a>
 			<Icon icon="rocket-launch" size="1.2em" />
 		</p>
 		
 	</div>
-	<p class="legal">
-		<a href="/aviso-legal">Aviso Legal</a>
-		<a href="/cookies">Politica de Cookies</a>
-		<a href="/privacidad">Politica de Privacidad</a>
-	</p>
-	
+	<div class="footer-links">
+		<a href={currentRoutes.legal} class="footer-link">{currentTexts.legal}</a>
+		<a href={currentRoutes.privacy} class="footer-link">{currentTexts.privacy}</a>
+		<a href={currentRoutes.cookies} class="footer-link">{currentTexts.cookies}</a>
+	</div>
 </footer>
 <style>
 	footer {

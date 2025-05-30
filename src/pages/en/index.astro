@@ -1,17 +1,19 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Hero from "../components/Hero.astro";
-import Carrusel from "../components/Carrusel.astro";
-import Skills from "../components/Skills.astro";
-import Clientes from "../components/Clientes.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Hero from "../../components/Hero.astro";
+import Carrusel from "../../components/Carrusel.astro";
+import Skills from "../../components/Skills.astro";
+import Clientes from "../../components/Clientes.astro";
+// Determinar el idioma basado en la URL
+const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'es';
 ---
 
-<BaseLayout lang="es">
+<BaseLayout lang={lang}>
 	<div class="stack gap-20 lg:gap-48">
 		<div class="wrapper stack gap-8 lg:gap-20">
 			<header class="hero">
 				<Hero
-					title="Ilustrador profesional y artista conceptual"
+					title="Professional Illustrator and Concept Artist"
 				>
 					<Carrusel />
 				</Hero>

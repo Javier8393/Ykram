@@ -2,6 +2,35 @@
 import Icon from "./Icon.astro";
 import type { iconPaths } from "./IconPaths";
 
+// Determinar el idioma basado en la URL
+const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'es';
+
+// Textos según el idioma
+const texts = {
+	es: {
+		experience: "Experiencia",
+		experienceDesc1: "Desde 2017 he trabajado en proyectos internacionales, en áreas como: Juegos de mesa, Libros, Cine y Videojuegos.", 
+		experienceDesc2: "Para mí, cada proyecto es único y especial. Pongo toda mi creatividad y experiencia a tu disposición para lograr un resultado de alta calidad.",
+		podcast: "Concept Art",
+		podcastTitle: "El Camino del ilustrador",
+		podcastDesc1: "Un programa dedicado al dibujo con entrevistas a profesionales de distintas áreas.",
+		podcastDesc2: "Aquí hablaremos de actualidad y diferentes procesos creativos. ¡Nos vemos en el camino!",
+
+	},
+	en: {
+		experience: "Experience",
+		experienceDesc1: "Since 2017, I have worked on international projects in areas such as: Board Games, Books, Cinema, and Video Games.", 
+		experienceDesc2: "For me, every project is unique and special. I put all my creativity and experience at your disposal to achieve a high-quality result.",
+		podcast: "Concept Art",
+		podcastTitle: "The Illustrator's Journey",
+		podcastDesc1: "A show dedicated to drawing with interviews with professionals from different fields.",
+		podcastDesc2: "Here we will talk about current topics and various creative processes. See you on the journey!",
+
+	}
+};
+
+const currentTexts = texts[lang];
+
 const iconLinks: {
 	label: string;
 	href: string;
@@ -31,47 +60,43 @@ const iconLinks: {
 ---
 
 <section class="box skills">
-	<div class="stack gap-1 lg:gap-2">
-		<h2>
-			<Icon icon="expert" color="var(--accent-regular)" size="2.5rem" />
-			Experiencia
-		</h2>
-		<p>
-			Desde 2017 he trabajado en proyectos internacionales, en áreas como:
-			Juegos de mesa, Libros, Cine y Videojuegos.
-			<br />Para mí, cada proyecto es único y especial. Pongo toda mi
-			creatividad y experiencia a tu disposición para lograr un resultado
-			de alta calidad.
-		</p>
-	</div>
+		<div class="stack gap-1 lg:gap-2">
+			<h3>
+				<Icon icon="expert" color="var(--accent-regular)" size="2.5rem" />
+				{currentTexts.experience}
+			</h3>
+			<p>
+				{currentTexts.experienceDesc1}
+				<br /><br />
+				{currentTexts.experienceDesc2}
+			</p>
+		</div>
 
-	<div class="stack gap-1 lg:gap-2">
-		<h2>
-			<div class="socials">
-				<div class="icons">
-					{
-						iconLinks.map(({ href, icon, label }) => (
-							<a href={href} class="social" title={label}>
-								<Icon
-									color="var(--accent-regular)"
-									size="2.5rem"
-									icon={icon}
-								/>
-							</a>
-						))
-					}
+		<div class="stack gap-1 lg:gap-2">
+			<h2>
+				<div class="socials">
+					<div class="icons">
+						{
+							iconLinks.map(({ href, icon, label }) => (
+								<a href={href} class="social" title={label}>
+									<Icon
+										color="var(--accent-regular)"
+										size="2.5rem"
+										icon={icon}
+									/>
+								</a>
+							))
+						}
+					</div>
+					<span class="podcast-label">Podcast:</span>
 				</div>
-				<span class="podcast-label">Podcast:</span>
-			</div>
-		</h2>
-		<h5>El Camino del ilustrador</h5>
-		<p>
-			Un programa dedicado al dibujo con entrevistas a profesionales de
-			distintas áreas.
-			<br /><br />
-			Aquí hablaremos de actualidad y diferentes procesos creativos. ¡Nos vemos
-			en el camino!
-		</p>
+			</h2>
+			<h5>{currentTexts.podcastTitle}</h5>
+			<p>
+				{currentTexts.podcastDesc1}
+				<br /><br />
+				{currentTexts.podcastDesc2}
+			</p>
 	</div>
 </section>
 

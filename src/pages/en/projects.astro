@@ -1,35 +1,34 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import { loadProjects } from "../cloudinary/loadProjects";
-
-// Determinar el idioma basado en la URL
-const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'es';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { loadProjects } from "../../cloudinary/loadProjects";
+import type { ProjectData } from "../../cloudinary/loadProjects";
 
 const projects = await loadProjects();
+// Determinar el idioma basado en la URL
+const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'es';
 ---
 
-<BaseLayout lang="es">
+<BaseLayout lang={lang}>
     <div class="projects-list">
         {projects.length > 0 ? (
             projects.map((project) => (
                 <a
-                    href={`/proyectos/${encodeURIComponent(project.folder.split("/")[1])}`}
+                    href={`/en/projects/${encodeURIComponent(project.folder.split("/")[1])}`}
                     class="project-item"
                 >
                     <img
                         src={project.featured_image}
-                        alt={typeof project.name === 'string' ? project.name : project.name.es}
+                        alt={typeof project.name === 'string' ? project.name : project.name.en}
                         class="project-image"
                     />
                     <div class="project-details">
-                        <h3>{typeof project.name === 'string' ? project.name : project.name.es}</h3>
-                        <p>{typeof project.description === 'string' ? project.description : project.description.es}</p>
-                        
+                        <h3>{typeof project.name === 'string' ? project.name : project.name.en}</h3>
+                        <p>{typeof project.description === 'string' ? project.description : project.description.en}</p>
                     </div>
                 </a>
             ))
         ) : (
-            <p>No hay proyectos disponibles.</p>
+            <p>No projects available.</p>
         )}
     </div>
 </BaseLayout>
@@ -96,4 +95,4 @@ const projects = await loadProjects();
             object-fit: cover;
         }
     }
-</style>
+</style> 

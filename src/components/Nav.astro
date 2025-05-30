@@ -1,13 +1,108 @@
 ---
 import Icon from './Icon.astro';
-import TextToggle from './TextToggle.astro';
 import type { iconPaths } from './IconPaths';
+import { getLanguage, getBasePath } from '../utils/i18n';
+
+interface Props {
+	lang?: 'en' | 'es';
+}
+
+// Usar el idioma proporcionado o determinarlo de la URL
+const lang = Astro.props.lang || getLanguage(Astro.url.pathname);
+
+// Mapeo de rutas entre idiomas
+const routeMap = {
+	'es': {
+		'proyectos': 'projects',
+		'ilustraciones': 'illustrations',
+		'concept-art': 'concept-art',
+		'contacto': 'contact',
+		'aviso-legal': 'legal-notice',
+		'privacidad': 'privacy-policy',
+		'cookies': 'cookies'
+	},
+	'en': {
+		'projects': 'proyectos',
+		'illustrations': 'ilustraciones',
+		'concept-art': 'concept-art',
+		'contact': 'contacto',
+		'legal-notice': 'aviso-legal',
+		'privacy-policy': 'privacidad',
+		'cookies': 'cookies'
+	}
+} as const;
+
+type RouteMap = typeof routeMap;
+type Lang = keyof RouteMap;
+type RouteKey<T extends Lang> = keyof RouteMap[T];
+
+// Función para obtener la ruta equivalente en el otro idioma
+function getEquivalentPath(currentPath: string, targetLang: Lang): string {
+	// Si estamos en la raíz, simplemente cambiar el prefijo de idioma
+	if (currentPath === '/' || currentPath === '/en/') {
+		return targetLang === 'en' ? '/en/' : '/';
+	}
+
+	// Obtener las partes de la ruta sin el prefijo de idioma
+	const pathWithoutLang = currentPath.startsWith('/en') ? currentPath.slice(3) : currentPath;
+	const pathParts = pathWithoutLang.split('/').filter(Boolean);
+	
+	if (pathParts.length === 0) {
+		return targetLang === 'en' ? '/en/' : '/';
+	}
+
+	// Obtener la ruta base y su equivalente
+	const currentLang = currentPath.startsWith('/en') ? 'en' : 'es';
+	const baseRoute = pathParts[0];
+	
+	// Si la ruta base tiene un equivalente en el otro idioma, usarlo
+	if (baseRoute in routeMap[currentLang]) {
+		const equivalentRoute = routeMap[currentLang][baseRoute as RouteKey<typeof currentLang>];
+		const remainingPath = pathParts.slice(1).join('/');
+		const pathSuffix = remainingPath ? `/${remainingPath}` : '/';
+		return targetLang === 'en' ? `/en/${equivalentRoute}${pathSuffix}` : `/${equivalentRoute}${pathSuffix}`;
+	}
+
+	// Si no hay equivalente, mantener la misma ruta pero cambiar el prefijo de idioma
+	return targetLang === 'en' ? `/en${pathWithoutLang}` : pathWithoutLang;
+}
+
+// Textos según el idioma
+const texts = {
+	es: {
+		home: "Inicio",
+		projects: "Proyectos",
+		illustrations: "Ilustraciones",
+		conceptArt: "Concept Art",
+		contact: "Contacto",
+		legal: "Aviso Legal",
+		privacy: "Política de Privacidad",
+		cookies: "Política de Cookies"
+	},
+	en: {
+		home: "Home",
+		projects: "Projects",
+		illustrations: "Illustrations",
+		conceptArt: "Concept Art",
+		contact: "Contact",
+		legal: "Legal Notice",
+		privacy: "Privacy Policy",
+		cookies: "Cookie Policy"
+	}
+};
+
+const currentTexts = texts[lang];
+
+// Rutas base según el idioma
+const basePath = lang === 'en' ? '/en' : '';
 
 /** Main menu items */
 const textLinks: { label: string; href: string }[] = [
-	{ label: 'Sobre mi', href: '/' },
-	{ label: 'Proyectos', href: '/proyectos/' },
-	{ label: 'Portfolio', href: '/portfolio/' },
+	{ label: currentTexts.home, href: lang === 'en' ? '/en/' : '/' },
+	{ label: currentTexts.projects, href: `${basePath}/${lang === 'en' ? 'projects' : 'proyectos'}/` },
+	{ label: currentTexts.illustrations, href: `${basePath}/${lang === 'en' ? 'illustrations' : 'ilustraciones'}/` },
+	{ label: currentTexts.conceptArt, href: `${basePath}/concept-art/` },
+	{ label: currentTexts.contact, href: `${basePath}/${lang === 'en' ? 'contact' : 'contacto'}/` },
 ];
 
 /** Icon links to social media — edit these with links to your profiles! */
@@ -21,8 +116,8 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 
 <nav>
 	<div class="menu-header">
-		<a href="/" class="site-title">
-			<img src="/assets/icons/logoweb-YKRAM-optimizado.gif" alt="Icono YKRAM"  width="200">
+		<a href={lang === 'en' ? '/en/' : '/'} class="site-title">
+			<img src="/assets/icons/logoweb-YKRAM-optimizado.gif" alt="Icono YKRAM" width="200">
 		</a>
 		<menu-button>
 			<template>
@@ -34,35 +129,56 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 		</menu-button>
 	</div>
 
-
 	<div id="menu-content" hidden>
 		<ul class="nav-items">
 			{
-				textLinks.map(({ label, href }) => (
-					<li>
-						<a
-							aria-current={Astro.url.pathname === href}
-							class:list={[
-								'link',
-								{
-									active:
-										Astro.url.pathname === href ||
-										(href !== '/' && Astro.url.pathname.startsWith(href)),
-								},
-							]}
-							href={href}
-						>
-							{label}
-						</a>
-					</li>
-				))
+				textLinks.map(({ label, href }) => {
+					const isActive = Astro.url.pathname === href || 
+						(href !== '/' && href !== '/en/' && Astro.url.pathname.startsWith(href)) ||
+						(href === '/' && Astro.url.pathname === '/') ||
+						(href === '/en/' && Astro.url.pathname === '/en/');
+					return (
+						<li>
+							<a
+								aria-current={isActive}
+								class:list={[
+									'link',
+									{ active: isActive }
+								]}
+								href={href}
+							>
+								{label}
+							</a>
+						</li>
+					);
+				})
 			}
 		</ul>
 		<div class="menu-footer">
-			
-
+			<div class="language-selector">
+				<div class="language-links">
+					<a 
+						href={getEquivalentPath(Astro.url.pathname, 'es')}
+						class:list={[
+							'lang-link',
+							{ active: lang === 'es' }
+						]}
+					>
+						ES
+					</a>
+					<span class="separator">|</span>
+					<a 
+						href={getEquivalentPath(Astro.url.pathname, 'en')}
+						class:list={[
+							'lang-link',
+							{ active: lang === 'en' }
+						]}
+					>
+						EN
+					</a>
+				</div>
+			</div>
 			<div class="text-toggle">
-				
 			</div>
 		</div>
 	</div>
@@ -155,7 +271,6 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 		position: absolute;
 		inset: -1px;
 		content: '';
-		background: var(--gradient-stroke);
 		border-radius: 999rem;
 		z-index: -1;
 	}
@@ -264,7 +379,6 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 			position: absolute;
 			inset: -1px;
 			content: '';
-			background: var(--gradient-stroke);
 			border-radius: 999rem;
 			z-index: -1;
 		}
@@ -314,5 +428,51 @@ const iconLinks: { label: string; href: string; icon: keyof typeof iconPaths }[]
 		.link.active {
 			color: SelectedItem;
 		}
+	}
+
+	.language-selector {
+		display: flex;
+		align-items: center;
+	}
+
+	.language-links {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		background: radial-gradient(var(--gray-900), var(--gray-800) 150%);
+		padding: 0.5rem 1rem;
+		border-radius: 999rem;
+		box-shadow: var(--shadow-md);
+	}
+
+	.language-links::before {
+		position: absolute;
+		inset: -1px;
+		content: '';
+		border-radius: 999rem;
+		z-index: -1;
+	}
+
+	.lang-link {
+		color: var(--gray-300);
+		text-decoration: none;
+		font-weight: 500;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.5rem;
+		transition: all 0.3s ease;
+	}
+
+	.lang-link:hover {
+		color: var(--gray-100);
+		background-color: var(--accent-subtle-overlay);
+	}
+
+	.lang-link.active {
+		color: var(--accent-text-over);
+		background-color: var(--accent-regular);
+	}
+
+	.separator {
+		color: var(--gray-600);
 	}
 </style>

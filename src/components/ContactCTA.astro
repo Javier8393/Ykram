@@ -1,5 +1,46 @@
 ---
 import Icon from "./Icon.astro";
+
+// Determinar el idioma basado en la URL
+const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'es';
+
+// Textos según el idioma
+const texts = {
+    es: {
+        title: "¿Tienes un proyecto en mente?",
+        description: "Estoy disponible para trabajar en proyectos de ilustración y concept art.",
+        description2: "¡Hablemos de tu idea!",
+        additionalText: "Cada proyecto es una oportunidad para crear algo único. Me especializo en dar vida a tus ideas a través de ilustraciones personalizadas y arte conceptual que capturan la esencia de tu visión.",
+        button: "Contactar",
+        form: {
+            name: "Nombre:",
+            email: "Correo:",
+            message: "Mensaje:",
+            namePlaceholder: "Tu nombre",
+            emailPlaceholder: "Tu correo",
+            messagePlaceholder: "Tu mensaje",
+            terms: "Acepto los términos."
+        }
+    },
+    en: {
+        title: "Have a project in mind?",
+        description: "I'm available for illustration and concept art projects.",
+        description2: "Let's talk about your idea!",
+        additionalText: "Every project is an opportunity to create something unique. I specialize in bringing your ideas to life through custom illustrations and concept art that captures the essence of your vision.",
+        button: "Contact",
+        form: {
+            name: "Name:",
+            email: "Email:",
+            message: "Message:",
+            namePlaceholder: "Your name",
+            emailPlaceholder: "Your email",
+            messagePlaceholder: "Your message",
+            terms: "I accept the terms."
+        }
+    }
+};
+
+const currentTexts = texts[lang];
 ---
 
 <aside class="box">
@@ -12,45 +53,54 @@ import Icon from "./Icon.astro";
       height="620"
       src="/portrait.jpg"
     />
-    <h2>
-      ¿Tienes una idea en mente? <br />!Escribeme y la hacemos realidad juntos!
-    </h2>
-    <label id="notification" class="notification hidden"></label>
+    <div class="text-content">
+      <h2>
+        {currentTexts.title}
+      </h2>
+      <p class="description">{currentTexts.description}</p>
+      <p class="description2">{currentTexts.description2}</p>
+      <p class="additional-text">{currentTexts.additionalText}</p>
+      <label id="notification" class="notification hidden"></label>
+    </div>
   </div>
 
   <form>
     <div class="form-group">
       <div class="column">
-        <label for="name">Nombre:</label>
+        <label for="name">{currentTexts.form.name}</label>
         <input
           type="text"
           id="name"
           name="name"
-          placeholder="Tu nombre"
+          placeholder={currentTexts.form.namePlaceholder}
           required
         />
 
-        <label for="email">Correo:</label>
+        <label for="email">{currentTexts.form.email}</label>
         <input
           type="email"
           id="email"
           name="email"
-          placeholder="Tu correo"
+          placeholder={currentTexts.form.emailPlaceholder}
           required
         />
 
-        <label for="message">Mensaje:</label>
-        <textarea id="message" name="message" placeholder="Tu mensaje" required
+        <label for="message">{currentTexts.form.message}</label>
+        <textarea 
+          id="message" 
+          name="message" 
+          placeholder={currentTexts.form.messagePlaceholder} 
+          required
         ></textarea>
 
         <div class="form-group checkbox-group">
-          <label for="legal">Acepto los términos.</label>
+          <label for="legal">{currentTexts.form.terms}</label>
           <input type="checkbox" id="legal" name="legal" required />
         </div>
 
         <div class="button-container">
           <button type="submit">
-            Enviar mensaje
+            {currentTexts.button}
             <Icon icon="paper-plane-tilt" size="1.2em" />
           </button>
         </div>
@@ -61,6 +111,26 @@ import Icon from "./Icon.astro";
 
 <script>
   import { actions } from "astro:actions";
+
+  // Mensajes según el idioma
+  const messages = {
+    es: {
+      success: "¡Tu mensaje se ha enviado correctamente!",
+      error: "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+      genericError: "Hubo un problema al enviar el mensaje.",
+      notificationError: "El elemento de notificación no se encontró en el DOM."
+    },
+    en: {
+      success: "Your message has been sent successfully!",
+      error: "Could not send the message. Please try again.",
+      genericError: "There was a problem sending the message.",
+      notificationError: "Notification element not found in DOM."
+    }
+  };
+
+  // Determinar el idioma basado en la URL
+  const lang = window.location.pathname.startsWith('/en') ? 'en' : 'es';
+  const currentMessages = messages[lang];
 
   const form = document.querySelector<HTMLFormElement>("form");
   const notification = document.getElementById("notification");
@@ -82,39 +152,41 @@ import Icon from "./Icon.astro";
       const { error, data } = await actions.contact(formData);
 
       if (error) {
-        throw new Error("No se pudo enviar el mensaje. Inténtalo de nuevo.");
+        throw new Error(currentMessages.error);
       }
 
-      showNotification("¡Tu mensaje se ha enviado correctamente!", "success");
+      showNotification(currentMessages.success, "success");
       form.reset();
     } catch (err) {
       const errorMessage =
         err instanceof Error
           ? err.message
-          : "Hubo un problema al enviar el mensaje.";
+          : currentMessages.genericError;
       showNotification(errorMessage, "error");
     }
   });
 
   function showNotification(message: string, type: "success" | "error") {
-  if (!notification) {
-    console.error("El elemento de notificación no se encontró en el DOM.");
-    return;
+    if (!notification) {
+      console.error(currentMessages.notificationError);
+      return;
+    }
+
+    notification.textContent = message;
+    notification.classList.remove("hidden", "success", "error");
+    notification.classList.add(type);
+
+    setTimeout(() => {
+      notification.classList.add("hidden");
+    }, 3000);
   }
-
-  notification.textContent = message;
-  notification.classList.remove("hidden", "success", "error");
-  notification.classList.add(type);
-
-  setTimeout(() => {
-    notification.classList.add("hidden");
-  }, 3000);
-}
-
 </script>
 
-
 <style>
+  .box {
+    width: min(95%, 1400px);
+    margin: 0 auto 10vh;
+  }
   .notification {
     border-radius: 0.5rem;
     font-size: var(--text-md);
@@ -123,56 +195,87 @@ import Icon from "./Icon.astro";
     transition:
       opacity 0.3s ease,
       visibility 0.3s ease;
+    padding: 1rem;
+    margin-top: 1rem;
   }
 
   .notification.hidden {
     opacity: 0;
     visibility: hidden;
     height: 0;
-    overflow: hidden; /* Prevenir desbordamiento */
+    overflow: hidden;
   }
 
   .notification.success {
     color: var(--accent-regular);
+    background-color: rgba(134, 176, 85, 0.1);
+    border: 1px solid var(--accent-regular);
   }
 
   .notification.error {
-    color: red;
-  }
-
-  .empresas {
-    margin: auto;
+    color: #ff4444;
+    background-color: rgba(255, 68, 68, 0.1);
+    border: 1px solid #ff4444;
   }
 
   aside {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--gray-800);
-    border-radius: 0.75rem;
+    border-radius: 1rem;
     padding: 1.5rem;
     background-color: var(--gray-999);
-    box-shadow: var(--shadow-sm);
-    width: 100%;
+    box-shadow: var(--shadow-md);
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 1.5rem;
   }
 
   .portrait {
     border-radius: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    object-fit: cover;
   }
 
-  /* Sección de información a la izquierda */
+  .portrait:hover {
+    transform: scale(1.02);
+  }
+
   .info {
-    flex: 1;
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .text-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .info h2 {
     font-size: var(--text-xl);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
+    color: var(--accent-light);
   }
 
-  .info p {
+  .description, .description2 {
     font-size: var(--text-md);
-    color: var(--gray-500);
+    color: var(--gray-300);
+    line-height: 1.4;
+  }
+
+  .additional-text {
+    font-size: var(--text-sm);
+    color: var(--gray-400);
+    line-height: 1.4;
+    font-style: italic;
   }
 
   form {
@@ -189,119 +292,186 @@ import Icon from "./Icon.astro";
   }
 
   .column {
-    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
   }
 
   label {
     font-size: var(--text-md);
-    color: var(--gray-500);
+    color: var(--gray-200);
+    margin-bottom: 0.5rem;
   }
 
-  input,
+  input[type="text"],
+  input[type="email"],
   textarea {
-    padding: 0.5rem;
-    border: 1px solid var(--gray-500);
+    padding: 1rem;
+    border: 1px solid var(--gray-800);
     border-radius: 0.5rem;
+    background-color: var(--gray-900);
+    color: var(--gray-100);
     font-size: var(--text-md);
-    background-color: var(--gray-200);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent-regular);
+    box-shadow: 0 0 0 2px rgba(134, 176, 85, 0.2);
   }
 
   textarea {
-    height: 125px;
-    resize: none;
+    min-height: 120px;
+    resize: vertical;
   }
 
-  /* Botón y contenedor en pantallas pequeñas */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: var(--accent-regular);
+  }
+
   .button-container {
     display: flex;
     justify-content: flex-end;
-    width: 100%;
   }
 
   button {
-    padding: 0.5rem 1.5rem;
-    background: var(--gradient-accent-green);
-    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background-color: var(--accent-regular);
+    color: var(--gray-900);
     border: none;
     border-radius: 0.5rem;
     font-size: var(--text-md);
+    font-weight: 600;
     cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%; /* Ancho completo en pantallas pequeñas */
+    transition: transform 0.3s ease, background-color 0.3s ease;
   }
 
   button:hover {
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    background-color: var(--accent-light);
   }
 
-  /* Contenedor del checkbox */
-  .checkbox-group {
-    display: flex;
-    align-items: center; /* Alinea el checkbox con el texto */
-    gap: 0.5rem; /* Espacio entre el checkbox y el texto */
-    flex-wrap: wrap; /* Permite que el texto se ajuste en pantallas pequeñas */
-  }
-
-  /* Ajuste para el input de tipo checkbox */
-  .checkbox-group input[type="checkbox"] {
-    margin: 0; /* Elimina el margen predeterminado del navegador */
-    width: 1rem; /* Asegura un tamaño consistente */
-    height: 1rem; /* Asegura un tamaño consistente */
-  }
-
-  /* Ajuste del label para el checkbox */
-  .checkbox-group label {
-    font-size: var(--text-md); /* Tamaño de texto consistente */
-    color: var(--gray-500); /* Color del texto */
-    line-height: 1.5; /* Espaciado vertical del texto */
-  }
-
-  @media (min-width: 50em) {
+  @media (min-width: 1024px) {
     aside {
       flex-direction: row;
-      gap: 2rem;
+      align-items: flex-start;
+      width: 90%;
+      gap: 5rem;
+      padding: 2rem;
     }
 
     .info {
+      flex: 0 0 35%;
       margin-bottom: 0;
     }
 
     form {
-      flex-direction: column;
-    }
-
-    .form-group {
-      flex-direction: row;
-      gap: 2rem;
-    }
-
-    /* Estilos del botón en pantallas grandes */
-    .button-container {
-      justify-content: flex-end;
-      align-items: center;
-    }
-
-    button {
-      width: 325px; /* Tamaño fijo en pantallas grandes */
-    }
-
-    .checkbox-group {
-      flex-direction: row; /* Mantén el checkbox y el texto en línea */
-      align-items: center;
-      gap: 0.5rem; /* Asegura espacio adecuado entre checkbox y texto */
+      flex: 0 0 55%;
     }
   }
 
-  @media (min-width: 75em) {
+  @media (min-width: 768px) and (max-width: 1023px) {
     aside {
-      border-radius: 1.5rem;
-      padding: 2.5rem;
+      flex-direction: row;
+      align-items: flex-start;
+      width: 95%;
+      gap: 3rem;
+      padding: 1.75rem;
+    }
+
+    .info {
+      flex: 0 0 40%;
+    }
+
+    form {
+      flex: 0 0 55%;
+    }
+
+    .portrait {
+      max-width: 250px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    aside {
+      width: 100%;
+      padding: 1.25rem;
+    }
+
+    .portrait {
+      max-width: 200px;
+    }
+
+    .info {
+      align-items: center;
+      text-align: center;
+    }
+
+    .form-group {
+      gap: 0.75rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      padding: 0.75rem;
+    }
+
+    button {
+      width: 100%;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    aside {
+      padding: 1rem;
+    }
+
+    .portrait {
+      max-width: 180px;
+    }
+
+    .info h2 {
+      font-size: var(--text-lg);
+    }
+
+    .description, .description2 {
+      font-size: var(--text-sm);
+    }
+
+    .additional-text {
+      font-size: var(--text-xs);
+    }
+
+    label {
+      font-size: var(--text-sm);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      font-size: var(--text-sm);
+    }
+
+    button {
+      font-size: var(--text-sm);
     }
   }
 </style>

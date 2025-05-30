@@ -1,12 +1,19 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "types": ["@types/node"], // Asegúrate de incluir esto
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "target": "ESNext",
-    "jsx": "preserve",
-    "esModuleInterop": true, // Añadir esta línea para la interoperabilidad de módulos
-    "skipLibCheck": true // Esto evita los errores de tipos en bibliotecas
-  }
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "src/pages/en/concept-art.astro",
+    "src/pages/es/concept-art.astro",
+    "src/pages/es/ilustraciones.astro",
+    "src/pages/en/illustrations.astro",
+    "src/pages/es/proyectos.astro",
+    "src/pages/en/proyectos.astro",
+    "src/pages/404.astro"
+  ]
 }

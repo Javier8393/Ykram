@@ -1,8 +1,83 @@
 ---
-import Hero from '../components/Hero.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Determinar el idioma basado en la URL
+const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'es';
+
+// Textos según el idioma
+const texts = {
+    es: {
+        title: 'Página no encontrada',
+        description: 'Lo sentimos, la página que buscas no existe.',
+        backHome: 'Volver al inicio'
+    },
+    en: {
+        title: 'Page not found',
+        description: 'Sorry, the page you are looking for does not exist.',
+        backHome: 'Back to home'
+    }
+};
+
+const currentTexts = texts[lang];
 ---
 
-<BaseLayout title="Not Found" description="404 Error — this page was not found">
-	<Hero title="Page Not Found" />
-</BaseLayout>
+<BaseLayout lang={lang}>
+    <div class="error-page wrapper">
+        <h1>404</h1>
+        <h2>{currentTexts.title}</h2>
+        <p>{currentTexts.description}</p>
+        <a href={lang === 'en' ? '/en/' : '/'} class="button">{currentTexts.backHome}</a>
+    </div>
+
+    <style>
+        .error-page {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: var(--text-5xl);
+            font-weight: bold;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+            line-height: 1;
+        }
+
+        h2 {
+            font-size: var(--text-3xl);
+            margin: 1rem 0;
+            color: var(--gray-100);
+        }
+
+        p {
+            color: var(--gray-400);
+            margin-bottom: 2rem;
+            font-size: var(--text-lg);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient-accent);
+            color: var(--accent-text-over);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+    </style>
+</BaseLayout> 

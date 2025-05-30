@@ -1,14 +1,10 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Grid from "../components/Grid.astro";
-
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Grid from "../../components/Grid.astro";
 // Determinar el idioma basado en la URL
 const lang = Astro.url.pathname.startsWith('/en') ? 'en' : 'es';
-const title = lang === 'en' ? 'Concept Art' : 'Concept Art';
 ---
 
 <BaseLayout lang={lang}>
     <Grid folderName="ConceptArt" />
-</BaseLayout>
-
-
+</BaseLayout> 

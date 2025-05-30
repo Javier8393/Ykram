@@ -31,7 +31,7 @@ export const server = {
     
       // Respuesta de reCAPTCHA
       const recaptchaResult = await recaptchaResponse.json();
-      console.log("Resultado de reCAPTCHA:", recaptchaResult);
+      // console.log("Resultado de reCAPTCHA:", recaptchaResult);
     
       if (!recaptchaResult.success || recaptchaResult.score < 0.5) {
         throw new Error("Validación de reCAPTCHA fallida.");

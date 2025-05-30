@@ -1,0 +1,34 @@
+---
+// Importa tu componente de galería
+import Mosaico from '../../../components/Mosaico.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { loadProjects } from '../../../cloudinary/loadProjects';
+import { getLanguage, get404Path } from '../../../utils/i18n';
+
+// Accede al nombre del proyecto desde la URL
+const { project } = Astro.params;
+const lang = getLanguage(Astro.url.pathname);
+
+if (!project) {
+    return Astro.redirect(get404Path(lang));
+}
+
+// Cargar todos los proyectos
+const projects = await loadProjects();
+
+// Verificar si el proyecto existe
+const projectExists = projects.some(p => p.folder.split('/')[1] === project);
+
+if (!projectExists) {
+    return Astro.redirect(get404Path(lang));
+}
+
+// Construye el path a la carpeta
+const folderName = `Proyectos/${project}`;
+
+// Desactivar prerenderización
+export const prerender = false;
+---
+<BaseLayout lang={lang}>
+    <Mosaico folderName={folderName} />
+</BaseLayout> 

@@ -1,115 +1,389 @@
 ---
-import cloudinary from '../cloudinary';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { Image } from 'astro:assets';
+// Importamos la función para cargar las imágenes del proyecto
+import { getProjectImages } from '../cloudinary/loadProjects';
 
-const { folderName } = Astro.props; // Prop que recibe el nombre de la carpeta
+// Obtenemos el nombre de la carpeta de las props
+const { folderName } = Astro.props;
 
-// Define la interfaz para las imágenes
-interface ImageData {
-    secure_url: string;
-    display_name: string;
-    width: number;
-    height: number;
-}
+// Cargamos las imágenes del proyecto
+const images = await getProjectImages(folderName);
 
-let images: ImageData[] = [];
-
-try {
-    // Usa el método de búsqueda avanzada de Cloudinary para filtrar por nombre de carpeta
-    const { resources }: { resources: ImageData[] } = await cloudinary.search
-        .expression(`folder:${folderName} AND resource_type:image`)  // Filtra las imágenes por carpeta
-        .max_results(30)                     // Limita los resultados a 30 (puedes ajustarlo)
-        .execute();                          // Ejecuta la búsqueda
-    
-    // Ordena las imágenes alfabéticamente por el campo 'display_name'
-    images = resources.sort((a: ImageData, b: ImageData) => b.display_name.localeCompare(a.display_name));
-} catch (error) {
-    console.error('Error al buscar imágenes:', error);
-    throw new Error('No se pudieron obtener las imágenes de la carpeta.');
-}
-
+// Ordenamos las imágenes por nombre de archivo
+images.sort((a, b) => a.filename.localeCompare(b.filename));
 ---
 
-<BaseLayout>
-    <div class="masonry-container">
-        {images.length > 0 ? (
-            images.map((image) => (
-                <a
-                    href={image.secure_url} 
-                    data-pswp-width={image.width} 
-                    data-pswp-height={image.height} 
-                    title={image.display_name}
-                    class="masonry-item"
-                >
-                    <Image 
-                        src={image.secure_url} 
-                        alt={image.display_name} 
-                        width={image.width}  
-                        height={image.height}
-                        loading="lazy"
-                        class="masonry-image" 
-                    />
+<!-- Contenedor principal del mosaico -->
+<div class="mosaic">
+    {images.length > 0 ? (
+        // Mapeamos las imágenes para crear los elementos del mosaico
+        images.map((image) => (
+            <a
+                href={image.secure_url} 
+                data-pswp-width={image.width} 
+                data-pswp-height={image.height} 
+                title={image.filename}
+                class="mosaic-item"
+                data-ratio={image.width / image.height}
+                onclick="return false;"
+            >
+                <img 
+                    src={image.secure_url} 
+                    alt={image.filename} 
+                    width={image.width}  
+                    height={image.height}
+                    loading="lazy"
+                    class="mosaic-image" 
+                />
+            </a>
+        ))
+    ) : (
+        <h1>No hay imágenes disponibles.</h1>
+    )}
+</div>
 
-                </a>
-            ))
-        ) : (
-            <p>No hay imágenes disponibles.</p>
-        )}
-    </div>
-</BaseLayout>
+<script>
+    // Importamos PhotoSwipe para la galería de imágenes
+    import PhotoSwipe from 'photoswipe';
+    import PhotoSwipeLightbox from 'photoswipe/lightbox';
+    import 'photoswipe/style.css';
 
-<script src="/src/scripts/photoswipe-init.js"></script>
+    /**
+     * Función que analiza las dimensiones de las imágenes para encontrar el tamaño estándar
+     */
+    function analizarDimensionesImagenes(): { 
+        standardImage: { width: number, height: number, ratio: number },
+        matrix: { columns: number, rows: number }
+    } {
+        const items = document.querySelectorAll('.mosaic-item');
+        const dimensiones: { width: number, height: number, ratio: number }[] = [];
+        
+        items.forEach(item => {
+            const img = item.querySelector('img') as HTMLImageElement;
+            if (img) {
+                const ratio = img.naturalWidth / img.naturalHeight;
+                dimensiones.push({
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    ratio: ratio
+                });
+            }
+        });
+
+        // Si no hay imágenes, retornamos valores por defecto
+        if (dimensiones.length === 0) {
+            return {
+                standardImage: { width: 400, height: 300, ratio: 4/3 },
+                matrix: { columns: 3, rows: 3 }
+            };
+        }
+
+        // Agrupamos las dimensiones similares (con un margen de ±10%)
+        const grupos: { [key: string]: { 
+            count: number, 
+            width: number, 
+            height: number,
+            ratio: number 
+        }} = {};
+        
+        dimensiones.forEach(dim => {
+            const key = `${Math.round(dim.width/10)}x${Math.round(dim.height/10)}`;
+            if (!grupos[key]) {
+                grupos[key] = { 
+                    count: 0, 
+                    width: dim.width, 
+                    height: dim.height,
+                    ratio: dim.ratio
+                };
+            }
+            grupos[key].count++;
+        });
+
+        // Encontramos el grupo más común
+        let maxCount = 0;
+        let standardImage = { width: 0, height: 0, ratio: 0 };
+        
+        Object.entries(grupos).forEach(([_, grupo]) => {
+            if (grupo.count > maxCount) {
+                maxCount = grupo.count;
+                standardImage = {
+                    width: grupo.width,
+                    height: grupo.height,
+                    ratio: grupo.ratio
+                };
+            }
+        });
+
+        // Si no hay un tamaño común, usamos la imagen más pequeña
+        if (maxCount === 0) {
+            const smallestImage = dimensiones.reduce((min, curr) => {
+                const areaMin = min.width * min.height;
+                const areaCurr = curr.width * curr.height;
+                return areaCurr < areaMin ? curr : min;
+            });
+            standardImage = {
+                width: smallestImage.width,
+                height: smallestImage.height,
+                ratio: smallestImage.ratio
+            };
+        }
+
+        return {
+            standardImage,
+            matrix: { columns: 3, rows: 3 } // Valores iniciales, se ajustarán en calcularLayout
+        };
+    }
+
+    function calcularLayout(): void {
+        const mosaic = document.querySelector('.mosaic') as HTMLElement;
+        if (!mosaic) return;
+
+        const items = document.querySelectorAll('.mosaic-item');
+        const { standardImage } = analizarDimensionesImagenes();
+        
+        // Calculamos el tamaño disponible
+        const containerWidth = mosaic.clientWidth;
+        const containerHeight = mosaic.clientHeight;
+        
+        // Ajustamos el número de columnas según la cantidad de imágenes
+        const totalImages = items.length;
+        let numColumns = 4; // Por defecto 4 columnas
+        let numRows = 4;    // Por defecto 4 filas visibles
+        
+        // Verificamos si estamos en móvil
+        const isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            numColumns = 1;
+            numRows = totalImages;
+        } else {
+            // Si hay 5 o menos imágenes, usamos 2 columnas
+            if (totalImages <= 5) {
+                numColumns = 2;
+                numRows = Math.ceil(totalImages / numColumns);
+            } 
+            // Si hay entre 6 y 12 imágenes, usamos 3 columnas
+            else if (totalImages <= 12) {
+                numColumns = 3;
+                // Para 6 imágenes, usamos 5 filas para dar más espacio vertical
+                if (totalImages === 6) {
+                    numRows = 5;
+                } else {
+                    numRows = Math.ceil(totalImages / numColumns);
+                }
+            }
+        }
+        
+        const gap = 20; // 20px de gap entre celdas
+        const padding = 20; // 20px de padding en cada lado
+        
+        // Calculamos el espacio disponible para la matriz
+        const availableWidth = containerWidth - (padding * 2) - (gap * (numColumns - 1));
+        const availableHeight = containerHeight - (padding * 2) - (gap * (numRows - 1));
+        
+        // Calculamos el tamaño de cada celda
+        const cellWidth = availableWidth / numColumns;
+        const cellHeight = isMobile ? Math.max(250, availableHeight / numRows) : availableHeight / numRows;
+        
+        // Configuramos el grid
+        mosaic.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
+        mosaic.style.gridAutoRows = `${cellHeight}px`;
+        mosaic.style.gap = `${gap}px`;
+        mosaic.style.padding = `${padding}px`;
+        
+        items.forEach(item => {
+            const img = item.querySelector('img') as HTMLImageElement;
+            if (!img) return;
+
+            const ratio = img.naturalWidth / img.naturalHeight;
+            const mosaicItem = item as HTMLElement;
+            
+            // Calculamos cuántas celdas ocupa la imagen basado en su proporción
+            let columnSpan = 1;
+            let rowSpan = 1;
+            
+            if (!isMobile) {
+                // Si hay pocas imágenes, permitimos que ocupen más espacio
+                if (totalImages <= 5) {
+                    if (ratio > standardImage.ratio * 1.5) {
+                        columnSpan = 2;
+                    }
+                    if (ratio < standardImage.ratio * 0.6) {
+                        rowSpan = 2;
+                    }
+                } else {
+                    // Para muchas imágenes, mantenemos el comportamiento original
+                    if (ratio > standardImage.ratio * 1.2) {
+                        columnSpan = 2;
+                    }
+                    if (ratio < standardImage.ratio * 0.8) {
+                        rowSpan = 2;
+                    }
+                }
+            }
+            
+            // Calculamos el tamaño máximo que puede tener la imagen
+            const maxWidth = columnSpan * cellWidth;
+            const maxHeight = rowSpan * cellHeight;
+            
+            // Ajustamos el tamaño de la imagen manteniendo su proporción
+            let newWidth = maxWidth;
+            let newHeight = maxWidth / ratio;
+            
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = maxHeight * ratio;
+            }
+            
+            img.style.width = `${newWidth}px`;
+            img.style.height = `${newHeight}px`;
+            
+            mosaicItem.style.gridColumn = `span ${columnSpan}`;
+            mosaicItem.style.gridRow = `span ${rowSpan}`;
+        });
+    }
+
+    // Actualizamos el layout al cargar y al redimensionar la ventana
+    window.addEventListener('load', calcularLayout);
+    window.addEventListener('resize', calcularLayout);
+
+    // Inicializamos PhotoSwipe para la galería
+    const lightbox = new PhotoSwipeLightbox({
+        gallery: '.mosaic',
+        children: '.mosaic-item',
+        pswpModule: PhotoSwipe,
+        initialZoomLevel: 'fit',
+        secondaryZoomLevel: 1.5,
+        maxZoomLevel: 4,
+        paddingFn: (viewportSize) => {
+            return viewportSize.x < 768
+                ? { top: 5, bottom: 5, left: 5, right: 5 } // Móviles
+                : { top: 100, bottom: 100, left: 100, right: 100 }; // Escritorio
+        }
+    });
+
+    lightbox.init();
+</script>
 
 <style>
-.masonry-container {
-    background-color: #1a1a1a;
-    padding: 20px;
+/* Contenedor principal del mosaico */
+.mosaic {
+    width: 50%;          /* Ancho del contenedor */
+    height: 73vh;        /* Altura del contenedor */
     border-radius: 10px;
+    margin: 0 auto;
+    
+    /* Configuración del grid */
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    max-width: 1800px;
-    margin: 20px auto;
+    grid-template-columns: repeat(4, 1fr); /* 4 columnas por defecto */
+    
+    /* Configuración del scroll */
+    overflow-y: auto;                     /* Scroll vertical */
+    overflow-x: hidden;                   /* Ocultamos scroll horizontal */
+    scrollbar-width: none !important;     /* Ocultar scrollbar en Firefox */
+    -ms-overflow-style: none !important;  /* Ocultar scrollbar en IE/Edge */
 }
 
-.masonry-item {
-    display: block;
-    aspect-ratio: 1 / 1;
+/* Ocultar scrollbar en Chrome/Safari */
+.mosaic::-webkit-scrollbar {
+    width: 0 !important;
+    display: none !important;
+}
+
+/* Asegurar que el scroll funcione con el trackpad/mouse */
+.mosaic {
+    -webkit-overflow-scrolling: touch;                         /* Scroll suave en iOS */
+    scroll-behavior: smooth;                                   /* Scroll suave en general */
+}
+
+/* Estilo del scrollbar para Firefox */
+.mosaic {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-regular) rgba(0, 0, 0, 0.1);
+}
+
+/* Contenedor de cada imagen */
+.mosaic-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s ease;
+    cursor: pointer;
     overflow: hidden;
-    width: 100%;
-    border-radius: 5px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 20px;
+    min-height: 100%; /* Asegura que ocupe toda la altura de la celda */
 }
 
-.masonry-item:hover {
-    transform: scale(1.05);
-    background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+.mosaic-item::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        0deg,
+        transparent,
+        transparent 30%,
+        var(--accent-overlay)
+    );
+    transform: rotate(-45deg);
+    transition: all 0.5s ease;
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
 }
 
-.masonry-image {
+.mosaic-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px var(--accent-regular);
+}
+
+.mosaic-item:hover::before {
+    opacity: 1;
+    transform: rotate(-45deg) translateY(100%);
+}
+
+/* Estilo de las imágenes */
+.mosaic-image {
+    position: relative;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    border-radius: 5px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    object-fit: contain;
+    border-radius: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: all 0.5s ease;
+    filter: brightness(0.9);
+}
+
+.mosaic-item:hover .mosaic-image {
+    filter: brightness(1.1);
+}
+
+/* Ajustes responsivos */
+@media (max-width: 1200px) {
+    .mosaic {
+        width: 70%;
+        height: 75vh;
+    }
 }
 
 @media (max-width: 768px) {
-    .masonry-container {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    .mosaic {
+        width: 90%;
+        height: auto;
+        grid-template-columns: 1fr !important; /* 1 columna en móvil */
         gap: 15px;
+        padding: 15px;
     }
 }
 
 @media (max-width: 480px) {
-    .masonry-container {
-        grid-template-columns: 1fr;
-        gap: 10px;
+    .mosaic {
+        width: 95%;
+        gap: 20px;
+        padding: 15px;
     }
 }
-
-
 </style>

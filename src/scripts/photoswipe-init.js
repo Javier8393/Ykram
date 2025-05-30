@@ -1,8 +1,8 @@
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
 
-const lightbox = new PhotoSwipeLightbox({
-    gallery: '.masonry-container',
+// Configuración común para ambos contenedores
+const commonConfig = {
     children: 'a',
     pswpModule: () => import('photoswipe'),
     initialZoomLevel: 'fit',
@@ -12,5 +12,18 @@ const lightbox = new PhotoSwipeLightbox({
             ? { top: 5, bottom: 5, left: 5, right: 5 } // Móviles
             : { top: 100, bottom: 100, left: 100, right: 100 }; // Escritorio
     },
+};
+
+// Inicializar PhotoSwipe para Mosaico
+const lightboxMosaico = new PhotoSwipeLightbox({
+    ...commonConfig,
+    gallery: '.masonry-container',
 });
-lightbox.init();
+lightboxMosaico.init();
+
+// Inicializar PhotoSwipe para Grid
+const lightboxGrid = new PhotoSwipeLightbox({
+    ...commonConfig,
+    gallery: '.grid-container',
+});
+lightboxGrid.init();
