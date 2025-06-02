@@ -22,7 +22,7 @@ const columnCount = getColumnCount(images.length);
 <div class="grid-container pswp-gallery" style={`--column-count: ${columnCount}`}>
     {images.length > 0 ? (
         images.map((image) => {
-            const aspectRatio = image.width / image.height;
+            const aspectRatio = (image.width || 800) / (image.height || 600);
             
             return (
                 <a

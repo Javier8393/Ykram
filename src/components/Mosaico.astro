@@ -2,40 +2,91 @@
 // Importamos la función para cargar las imágenes del proyecto
 import { getProjectImages } from '../cloudinary/loadProjects';
 
+// Definimos la interfaz para las imágenes
+interface ProjectImage {
+    public_id: string;     // ID público del recurso en Cloudinary
+    secure_url: string;    // URL segura del recurso
+    filename: string;      // Nombre del archivo
+    asset_folder: string;  // Carpeta donde está almacenado el recurso
+    format: string;        // Formato del archivo (jpg, png, json, etc)
+    resource_type: string; // Tipo de recurso (image, raw, etc)
+    [key: string]: any;    // Permite propiedades adicionales
+}
+
 // Obtenemos el nombre de la carpeta de las props
 const { folderName } = Astro.props;
 
 // Cargamos las imágenes del proyecto
 const images = await getProjectImages(folderName);
 
-// Ordenamos las imágenes por nombre de archivo
-images.sort((a, b) => a.filename.localeCompare(b.filename));
+// Función para distribuir las imágenes de manera óptima
+function distribuirImagenes(imagenes: ProjectImage[]): ProjectImage[] {
+    // Ordenamos todas las imágenes por ratio
+    const ordenadas = [...imagenes].sort((a: ProjectImage, b: ProjectImage) => {
+        const ratioA = (a.width || 800) / (a.height || 600);
+        const ratioB = (b.width || 800) / (b.height || 600);
+        return ratioB - ratioA;
+    });
+
+    ordenadas.forEach((img, index) => {
+        const ratio = (img.width || 800) / (img.height || 600);
+    });
+    
+    if (imagenes.length <= 5) {
+        return ordenadas;
+    } else {
+        const resultado: ProjectImage[] = [];
+        const mitad = Math.ceil(ordenadas.length / 2);
+        
+        for (let i = 0; i < mitad; i++) {
+            resultado.push(ordenadas[i]);
+            if (i + mitad < ordenadas.length) {
+                resultado.push(ordenadas[i + mitad]);
+            }
+        }
+        
+        resultado.forEach((img, index) => {
+            const ratio = (img.width || 800) / (img.height || 600);
+        });
+        
+        return resultado;
+    }
+}
+
+// Distribuimos las imágenes
+const imagenesDistribuidas = distribuirImagenes(images);
 ---
 
 <!-- Contenedor principal del mosaico -->
 <div class="mosaic">
-    {images.length > 0 ? (
+    {imagenesDistribuidas.length > 0 ? (
         // Mapeamos las imágenes para crear los elementos del mosaico
-        images.map((image) => (
-            <a
-                href={image.secure_url} 
-                data-pswp-width={image.width} 
-                data-pswp-height={image.height} 
-                title={image.filename}
-                class="mosaic-item"
-                data-ratio={image.width / image.height}
-                onclick="return false;"
-            >
-                <img 
-                    src={image.secure_url} 
-                    alt={image.filename} 
-                    width={image.width}  
-                    height={image.height}
-                    loading="lazy"
-                    class="mosaic-image" 
-                />
-            </a>
-        ))
+        imagenesDistribuidas.map((image) => {
+            const width = image.width || 800;
+            const height = image.height || 600;
+            const ratio = width / height;
+            
+            return (
+                <a
+                    href={image.secure_url} 
+                    data-pswp-width={width} 
+                    data-pswp-height={height} 
+                    title={image.filename}
+                    class="mosaic-item"
+                    data-ratio={ratio}
+                    onclick="return false;"
+                >
+                    <img 
+                        src={image.secure_url} 
+                        alt={image.filename} 
+                        width={width}  
+                        height={height}
+                        loading="lazy"
+                        class="mosaic-image" 
+                    />
+                </a>
+            );
+        })
     ) : (
         <h1>No hay imágenes disponibles.</h1>
     )}
@@ -166,7 +217,7 @@ images.sort((a, b) => a.filename.localeCompare(b.filename));
                 numColumns = 3;
                 // Para 6 imágenes, usamos 5 filas para dar más espacio vertical
                 if (totalImages === 6) {
-                    numRows = 5;
+                    numRows = 4;
                 } else {
                     numRows = Math.ceil(totalImages / numColumns);
                 }
@@ -183,6 +234,12 @@ images.sort((a, b) => a.filename.localeCompare(b.filename));
         // Calculamos el tamaño de cada celda
         const cellWidth = availableWidth / numColumns;
         const cellHeight = isMobile ? Math.max(250, availableHeight / numRows) : availableHeight / numRows;
+        
+        console.log('Tamaño de celdas:', {
+            cellWidth,
+            cellHeight,
+            gridAutoRows: `${cellHeight}px`
+        });
         
         // Configuramos el grid
         mosaic.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
