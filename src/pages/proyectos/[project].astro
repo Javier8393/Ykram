@@ -1,6 +1,6 @@
 ---
 // Importa tu componente de galería
-import Mosaico from '../../components/Mosaico.astro';
+import Masonry from '../../components/Masonry.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { loadProjects } from '../../cloudinary/loadProjects';
 
@@ -28,5 +28,5 @@ const folderName = `Proyectos/${project}`;
 export const prerender = false;
 ---
 <BaseLayout lang="es">
-    <Mosaico folderName={folderName} />
+    <Masonry folderName={folderName} />
 </BaseLayout>

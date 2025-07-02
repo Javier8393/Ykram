@@ -1,0 +1,264 @@
+---
+// Componente Masonry.astro
+// Recibe el nombre de la carpeta por props y obtiene las imágenes desde Cloudinary
+import { getProjectImages } from '../cloudinary/loadProjects';
+const { folderName } = Astro.props;
+const images = await getProjectImages(folderName);
+const numImages = images.length;
+let itemWidth = '300px';
+if (numImages === 4) {
+  itemWidth = 'calc(50% - 16px)'; // No se usará, pero se mantiene para Masonry normal
+}
+---
+
+<div class="masonry">
+  {numImages === 4 ? (
+    <div class="masonry-grid-2x2">
+      {images.map((image: any) => (
+        <div class="masonry-cell">
+          <a
+            href={image.secure_url}
+            data-pswp-width={image.width || 800}
+            data-pswp-height={image.height || 600}
+            title={image.filename}
+            class="masonry-link"
+            onclick="return false;"
+          >
+            <img
+              src={image.secure_url}
+              alt={image.filename}
+              loading="lazy"
+            />
+          </a>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div class="masonry-grid">
+      {images.map((image: any) => (
+        <div class="masonry-item" style={`width: ${itemWidth};`}>
+          <a
+            href={image.secure_url}
+            data-pswp-width={image.width || 800}
+            data-pswp-height={image.height || 600}
+            title={image.filename}
+            class="masonry-link"
+            onclick="return false;"
+          >
+            <img
+              src={image.secure_url}
+              alt={image.filename}
+              loading="lazy"
+            />
+          </a>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
+<script>
+  import PhotoSwipe from 'photoswipe';
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import 'photoswipe/style.css';
+
+  // @ts-ignore: Importación dinámica de módulo externo
+  if (document.querySelector('.masonry-grid')) {
+    // @ts-ignore: No existe tipado para este import externo
+    import('https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js').then(() => {
+      const grid = document.querySelector('.masonry-grid');
+      // @ts-ignore: Acceso dinámico a propiedad de window
+      if (grid && window["Masonry"]) {
+        // @ts-ignore: Acceso dinámico a propiedad de window
+        new window["Masonry"](grid, {
+          itemSelector: '.masonry-item',
+          columnWidth: '.masonry-item',
+          percentPosition: true,
+          gutter: 16
+        });
+      }
+    });
+  }
+
+  // Inicializar PhotoSwipe siempre
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: '.masonry',
+    children: '.masonry-link',
+    pswpModule: PhotoSwipe,
+    initialZoomLevel: 'fit',
+    secondaryZoomLevel: 1.5,
+    maxZoomLevel: 4,
+    paddingFn: (viewportSize) => {
+      return viewportSize.x < 768
+        ? { top: 5, bottom: 5, left: 5, right: 5 }
+        : { top: 100, bottom: 100, left: 100, right: 100 };
+    }
+  });
+  lightbox.init();
+</script>
+
+<style>
+.masonry {
+  width: 50%;
+  height: 73vh;
+  margin: 0 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  text-align: center;
+  position: relative;
+  padding: 8px;
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE y Edge */
+}
+.masonry::-webkit-scrollbar {
+  width: 0 !important;          /* Chrome, Safari y Opera */
+  display: none !important;
+}
+.masonry-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+  gap: 12px;
+}
+.masonry-cell {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: rgba(0,0,0,0.03);
+}
+.masonry-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.masonry-grid {
+  height: 100%;
+}
+.masonry-item {
+  /* width se define en línea */
+  margin-bottom: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: rgba(0,0,0,0.03);
+  display: inline-block;
+  vertical-align: top;
+}
+.masonry-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Efecto hover igual que en Mosaico + holograma */
+.masonry-link {
+  position: relative;
+  display: block;
+  height: 100%;
+  width: 100%;
+  transition: all 1s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.masonry-link::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    0deg,
+    transparent,
+    transparent 30%,
+    var(--accent-overlay, rgba(0,255,255,0.15))
+  );
+  transform: rotate(-45deg);
+  transition: all 1s ease;
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: 20px;
+}
+.masonry-link:hover::before {
+  opacity: 1;
+  transform: rotate(-45deg) translateY(100%);
+}
+.masonry-link:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px var(--accent-regular, #00bcd4);
+  z-index: 2;
+}
+.masonry-link img {
+  transition: filter 1s;
+  filter: brightness(0.9);
+  border-radius: 12px;
+}
+.masonry-link:hover img {
+  filter: brightness(1.1);
+}
+
+/* Media queries para responsividad */
+@media (max-width: 1200px) {
+  .masonry {
+    width: 70%;
+    height: 75vh;
+    padding: 6px;
+  }
+}
+@media (max-width: 768px) {
+  .masonry {
+    width: 98%;
+    max-width: 400px;
+    min-width: 220px;
+    margin: 0 auto;
+    padding: 4px;
+    height: auto;
+  }
+  .masonry-grid,
+  .masonry-grid-2x2 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: none !important;
+    gap: 8px;
+  }
+  .masonry-item,
+  .masonry-cell {
+    width: 100% !important;
+    margin-bottom: 20px;
+    height: auto !important;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .masonry-link img,
+  .masonry-cell img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    min-height: 0;
+    max-height: none;
+    border-radius: 12px;
+    background: #f0f0f0;
+  }
+}
+@media (max-width: 480px) {
+  .masonry {
+    width: 100%;
+    max-width: 340px;
+    min-width: 180px;
+    margin: 0 auto;
+    padding: 2px;
+    height: auto;
+  }
+  .masonry-grid,
+  .masonry-grid-2x2 {
+    gap: 4px;
+  }
+}
+</style> 
